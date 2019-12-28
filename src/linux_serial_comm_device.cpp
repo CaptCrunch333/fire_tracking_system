@@ -1,5 +1,8 @@
 #include "linux_serial_comm_device.hpp"
 
+//TODO DELETE
+#include "Timer.hpp"
+
 LinuxSerialCommDevice* LinuxSerialCommDevice::A;
 int LinuxSerialCommDevice::m_serial_port;
 SerialDataMsg LinuxSerialCommDevice::m_serial_data;
@@ -38,8 +41,8 @@ void LinuxSerialCommDevice::attach_hardware_sender(void* sender_obj)
     tcgetattr(m_serial_port, &m_IO_handler); //get parameters assciated with port
 
     // Set in/out baud rate to be 115200
-    cfsetispeed(&m_IO_handler, B115200);
-    cfsetospeed(&m_IO_handler, B115200);
+    cfsetispeed(&m_IO_handler, B230400);
+    cfsetospeed(&m_IO_handler, B230400);
 
     m_IO_handler.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
     m_IO_handler.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
@@ -100,7 +103,7 @@ void LinuxSerialCommDevice::receive_msg_data(DataMessage* t_msg)
 
 void LinuxSerialCommDevice::send_data_to_hardware(DataMessage* t_msg)
 {
-    uint8_t buff[1];
+    //uint8_t buff[1];
     if(t_msg->getType() == msg_type::SERIALDATA)
     {
         SerialDataMsg* data = (SerialDataMsg*) t_msg;

@@ -54,8 +54,6 @@ void HeatCenterProvider::calcFireCenter(cv::Mat tmp, CamSpecs cam)
 
 		int y = mry/my;
 		int x = mrx/mx;
-		std::cout << "x: " << x << std::endl;
-		std::cout << "y: " << y << std::endl;
 		calcFireAngles(x, y, cam);
 	}
 	else
@@ -69,6 +67,8 @@ void HeatCenterProvider::calcFireAngles(int x,int y, CamSpecs cam)
 {
 	orientation.yaw = (x-(cam.width/2))*cam.ang_per_px * (M_PI/180.f);
 	orientation.pitch = ((cam.height/2)-y)*cam.ang_per_py * (M_PI/180.f);
+	orientation.yaw = -1* orientation.yaw;
+	orientation.pitch = -1* orientation.pitch;
 }
 
 void HeatCenterProvider::getHeatCenter(ThermalImageMsg* t_msg)

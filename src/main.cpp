@@ -73,7 +73,7 @@ int main(int argc, char** argv)
     // ********************************************************************************
     // *******************************  PID PARAMETERS ********************************
     PID_parameters* pid_para_pitch = new PID_parameters;
-    pid_para_pitch->kp = 2.0;
+    pid_para_pitch->kp = 5.0;
     pid_para_pitch->ki = 0.0;
     pid_para_pitch->kd = 0.0;
     pid_para_pitch->kdd = 0.0;
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 
     PID_parameters* pid_para_pitch_rate = new PID_parameters;
     pid_para_pitch_rate->kp = 2.0;
-    pid_para_pitch_rate->ki = 0.0;
+    pid_para_pitch_rate->ki = 1.0;
     pid_para_pitch_rate->kd = 0.0;
     pid_para_pitch_rate->kdd = 0.0;
     pid_para_pitch_rate->anti_windup = 0;
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
     Pitch_Rate_ControlSystem->changePIDSettings(pid_para_pitch_rate);
     
     PID_parameters* pid_para_yaw = new PID_parameters;
-    pid_para_yaw->kp = 2.0;
+    pid_para_yaw->kp = 5.0;
     pid_para_yaw->ki = 0.0;
     pid_para_yaw->kd = 0.0;
     pid_para_yaw->kdd = 0.0;
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
 
     PID_parameters* pid_para_yaw_rate = new PID_parameters;
     pid_para_yaw_rate->kp = 2.0;
-    pid_para_yaw_rate->ki = 0.0;
+    pid_para_yaw_rate->ki = 1.0;
     pid_para_yaw_rate->kd = 0.0;
     pid_para_yaw_rate->kdd = 0.0;
     pid_para_yaw_rate->anti_windup = 0;
@@ -121,6 +121,8 @@ int main(int argc, char** argv)
     main_Yaw_UserRef->add_callback_msg_receiver((msg_receiver*) Yaw_ControlSystem);
     Pitch_ControlSystem->add_callback_msg_receiver((msg_receiver*) Pitch_Rate_ControlSystem);
     Yaw_ControlSystem->add_callback_msg_receiver((msg_receiver*) Yaw_Rate_ControlSystem);
+    Pitch_ControlSystem->add_callback_msg_receiver((msg_receiver*) main_ctrl_actuation_bridge);
+    Yaw_ControlSystem->add_callback_msg_receiver((msg_receiver*) main_ctrl_actuation_bridge);
     Pitch_Rate_ControlSystem->add_callback_msg_receiver((msg_receiver*) main_ctrl_actuation_bridge);
     Yaw_Rate_ControlSystem->add_callback_msg_receiver((msg_receiver*) main_ctrl_actuation_bridge);
     main_ctrl_actuation_bridge->add_callback_msg_receiver((msg_receiver*) main_comm_stack);
@@ -135,6 +137,31 @@ int main(int argc, char** argv)
     pthread_create(&loop100hz_func_id, NULL, &Looper::Loop100Hz, NULL);
     pthread_create(&loop10hz_func_id, NULL, &Looper::Loop10Hz, NULL);
     // ********************************************************************************
+
+    //TODO: delete
+    // class temp_class : public msg_receiver
+    // {
+    //     public: 
+    //     void receive_msg_data(DataMessage* t_msg)
+    //     {
+    //         if(t_msg->getType() == msg_type::CONTROLLEROUTPUTMSG)
+    //         {
+    //             ControllerOutputMsg* this_msg = (ControllerOutputMsg*) t_msg;
+    //             if(this_msg->getSource() == control_system::pitch_rate)
+    //             {
+    //                 Logger::getAssignedLogger()->log("the received pitch value is: ", this_msg->getControlSignal(), LoggerLevel::Info);
+    //             }
+    //             else
+    //             {
+    //                 Logger::getAssignedLogger()->log("the received yaw value is: ", this_msg->getControlSignal(), LoggerLevel::Info);
+    //             }                
+    //         }
+    //     }
+    // };
+    // temp_class* tmp_rec = new temp_class();
+    // main_comm_stack->add_callback_msg_receiver((msg_receiver*) tmp_rec);
+    //
+
     while(ros::ok())
     {
         ros::spinOnce();

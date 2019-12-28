@@ -8,6 +8,7 @@
 #include "SerialDataMsg.hpp"
 #include "NozzleOrientationMsg.hpp"
 #include "MsgHandler.hpp"
+#include "ControllerOutputMsg.hpp"
 
 class BaseSerialParser : public msg_receiver, public msg_emitter
 {

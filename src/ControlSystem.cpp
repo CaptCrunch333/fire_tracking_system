@@ -45,8 +45,6 @@ void ControlSystem::receive_msg_data(DataMessage* t_msg){
         }//TODO add the update parameters msg
         
     }else if(t_msg->getType() == msg_type::UPDATECONTROLLER){
-
-        std::cout << "INSIDE " << (int)(this->getControlSystemType()) << std::endl;
         PID_parameters* _pid_param_msg = (PID_parameters*)t_msg;
         this->changePIDSettings(_pid_param_msg);
     }
@@ -61,8 +59,6 @@ void ControlSystem::getStatus(){
     
     for(Switcher* s : _switchers){
         if(s->getActiveBlock() != nullptr){
-            // std::cout << "For Control System " << static_cast<int>(_control_system) << std::endl;
-            // std::cout << "For switcher " << s->getID() << " the active block is " << s->getActiveBlock()->getID() << std::endl;
         }     
     }
 }
@@ -80,7 +76,6 @@ Switcher* ControlSystem::getReferenceSwitcher(){
 void ControlSystem::loopInternal(){
     Vector3D<float> data = _providerProcessVariable->getProcessVariable();
     m_provider_data_msg.setControlSystemMessage(this->getControlSystemType(), control_system_msg_type::provider_data, data);
-
     this->emit_message((DataMessage*) &m_provider_data_msg);
 }
 

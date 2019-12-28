@@ -12,6 +12,8 @@ class ControllerActuationBridge : public msg_emitter, public msg_receiver
 private:
 
     ControllerOutputMsg m_ctrl_output_msg;
+    float pid_p;
+    float pid_y;
 
 public:
     
