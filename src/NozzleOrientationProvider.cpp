@@ -25,8 +25,8 @@ void NozzleOrientationProvider::receive_msg_data(DataMessage* t_msg)
     if(t_msg->getType() == msg_type::NOZZLEMSG)
     {
         NozzleOrientationMsg* t_nozzle_msg = (NozzleOrientationMsg*) t_msg;
-        m_att.pitch = t_nozzle_msg->pitch;
-        m_heading.yaw = t_nozzle_msg->yaw;
+        m_att.pitch = t_nozzle_msg->pitch * 180/M_PI;
+        m_heading.yaw = t_nozzle_msg->yaw * 180/M_PI;
         //Logger::getAssignedLogger()->log("pitch: %f", m_att.pitch, LoggerLevel::Info);
         //Logger::getAssignedLogger()->log("yaw: %f", m_heading.yaw, LoggerLevel::Info);
     }

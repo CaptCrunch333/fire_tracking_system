@@ -9,30 +9,18 @@ void ControllerActuationBridge::receive_msg_data(DataMessage* t_msg)
         {
             switch (control_system_msg->getSource())
             {
-            case control_system::pitch_rate:
+            case control_system::pitch:
             {
-                m_ctrl_output_msg.setControlSignal(control_system_msg->getData(), control_system::pitch_rate);
+                m_ctrl_output_msg.setControlSignal(control_system_msg->getData(), control_system::pitch);
                 this->emit_message((DataMessage*) &m_ctrl_output_msg);
                 Logger::getAssignedLogger()->log("Pitch motor %f and PID %f ", m_ctrl_output_msg.getControlSignal(), pid_p ,LoggerLevel::Warning);
                 break;
             }
-            case control_system::yaw_rate:
-            {
-                m_ctrl_output_msg.setControlSignal(control_system_msg->getData(), control_system::yaw_rate);
-                this->emit_message((DataMessage*) &m_ctrl_output_msg);
-                Logger::getAssignedLogger()->log("Yaw motor %f and PID %f ", m_ctrl_output_msg.getControlSignal() , pid_y, LoggerLevel::Warning);
-                break;
-            }
-            case control_system::pitch:
-            {
-                //Logger::getAssignedLogger()->log("Pitch PID %f: ", control_system_msg->getData(), LoggerLevel::Warning);
-                pid_p = control_system_msg->getData();
-                break;
-            }
             case control_system::yaw:
             {
-                //Logger::getAssignedLogger()->log("Yaw PID %f: ", control_system_msg->getData(), LoggerLevel::Warning);
-                pid_y = control_system_msg->getData();
+                m_ctrl_output_msg.setControlSignal(control_system_msg->getData(), control_system::yaw);
+                this->emit_message((DataMessage*) &m_ctrl_output_msg);
+                Logger::getAssignedLogger()->log("Yaw motor %f and PID %f ", m_ctrl_output_msg.getControlSignal() , pid_y, LoggerLevel::Warning);
                 break;
             }
             default:

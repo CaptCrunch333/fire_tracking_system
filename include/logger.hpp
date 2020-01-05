@@ -25,6 +25,11 @@ class Logger {
     virtual void log(const char*,float,LoggerLevel)=0;
     virtual void log(const char*,float,float,LoggerLevel)=0;
     virtual void log(const char*,float,float,float,LoggerLevel)=0;
+
+    virtual void logtofile(const char*,float,LoggerLevel) = 0;
+    virtual void logtofile(const char*,float,float,LoggerLevel) = 0;
+    virtual void logtofile(const char*,float,float,float,LoggerLevel) = 0;
+
     virtual void enableFileLog(LoggerLevel)=0;// Example: if LoggerLevel::Warning is passed only LoggerLevel::Warning and LoggerLevel::Error will be written to file
     virtual void disableFileLog()=0;
 };

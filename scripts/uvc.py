@@ -27,14 +27,8 @@ def py_frame_callback(frame, userptr):
     array_pointer.contents, dtype=np.dtype(np.uint16)
   ).reshape(
     frame.contents.height, frame.contents.width
-  ) # no copy
-
-  # data = np.fromiter(
-  #   frame.contents.data, dtype=np.dtype(np.uint8), count=frame.contents.data_bytes
-  # ).reshape(
-  #   frame.contents.height, frame.contents.width, 2
-  # ) # copy
-
+  ) 
+  
   if frame.contents.data_bytes != (2 * frame.contents.width * frame.contents.height):
     return
 
@@ -63,9 +57,6 @@ def raw_to_8bit_THRESH(data):
   #cv2.normalize(data, data, 0, 65535, cv2.NORM_MINMAX)
   np.right_shift(data, 8, data)
   return cv2.threshold(np.uint8(data),120,255,cv2.THRESH_BINARY)
-           
-
-
 
 def display_temperature(img, val_k, loc, color):
   val = ktoc(val_k)
@@ -80,9 +71,8 @@ def main():
   devh = POINTER(uvc_device_handle)()
   ctrl = uvc_stream_ctrl()
   br = CvBridge()
-  pub = rospy.Publisher('lepton_topic', Image)
-  temp = rospy.Publisher('temp_range', temp_range)
-  #temp_pub_min = rospy.Publisher('temp_min', Float32, queue_size=1)
+  pub = rospy.Publisher('lepton_topic', Image,  queue_size=1)
+  temp = rospy.Publisher('temp_range', temp_range,  queue_size=1)
   rospy.init_node('image_data', anonymous=True)
   rate = rospy.Rate(10) # 10hz
 
@@ -100,7 +90,7 @@ def main():
     try:
       res = libuvc.uvc_open(dev, byref(devh))
       if res < 0:
-	print(res)
+        print(res)
         print("uvc_open error")
         exit(1)
 
@@ -122,43 +112,28 @@ def main():
         print("uvc_start_streaming failed: {0}".format(res))
         exit(1)
       try:
-        while True:
+        while not rospy.is_shutdown():
           data = q.get(True, 500)
-          data2 = q.get(True, 500)
           if data is None:
             break
+          #rospy.spin()
           data = cv2.resize(data[:,:], (160, 120))
-          data2 = cv2.resize(data[:,:], (160, 120))
           minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(data)
           temp_max = ktoc(maxVal)
           temp_min = ktoc(minVal)
-          r,img_normalized = raw_to_8bit_THRESH(data2)
-	  img = raw_to_8bit(data)
+          img = raw_to_8bit(data)
           image_message = br.cv2_to_imgmsg(img, "rgb8")
-          #image_message_normalized = br.cv2_to_imgmsg(img_normalized, "rgb8")
-    #      r,Gimg = raw_to_8bit_THRESH(data)
           display_temperature(img, minVal, minLoc, (255, 0, 0))
           display_temperature(img, maxVal, maxLoc, (0, 0, 255))
-  #        display_temperature(Gimg, maxVal, maxLoc, (0, 0, 255))
-  #        rospy.loginfo(temp_max)
-  #        print("I got here")
           pub.publish(image_message)
           temp.publish(temp_min, temp_max)
-          #temp_pub_min.publish(temp_min)
           cv2.imshow('Lepton Radiometry_N', img)
           cv2.waitKey(1)
-   #       if cv2.waitKey(2) == 27:
-   #            break
-   #       cv2.imshow('Threshold Radiometry', img_normalized)
-   #      cv2.waitKey(1)
 
         cv2.destroyAllWindows()
       finally:
-#	ret = uvc_get_gain(devh, gain, enum uvc_req_code req_code)
-#	print(ret)
         libuvc.uvc_stop_streaming(devh)
 
-      print("done")
     finally:
       libuvc.uvc_unref_device(dev)
   finally:
@@ -166,6 +141,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-
- 
-

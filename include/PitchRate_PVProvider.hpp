@@ -10,5 +10,4 @@ public:
     virtual Vector3D<float> getBodyRate() = 0;
     PitchRate_PVProvider();
     ~PitchRate_PVProvider();
-
 };
