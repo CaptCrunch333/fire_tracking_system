@@ -5,6 +5,7 @@
 #include "Roll_PVProvider.hpp"
 #include "Pitch_PVProvider.hpp"
 #include "Yaw_PVProvider.hpp"
+#include "logger.hpp"
 
 class GyroOrientationObserver : public Roll_PVProvider,
 								public Pitch_PVProvider,
@@ -20,7 +21,6 @@ public:
 	Vector3D<float> getBodyRate();
 	AttitudeMsg getAttitude();
 	HeadingMsg getHeading();
-	
 
 private:
 

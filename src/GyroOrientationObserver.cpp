@@ -20,10 +20,13 @@ void GyroOrientationObserver::updateSettings(FilterSettings* t_settings)
 
 void GyroOrientationObserver::loopInternal()
 {
-
     m_filtered_attitude.pitch = m_pitch_filter->getFilteredData(gyro_data.x);
     m_filtered_attitude.roll = m_roll_filter->getFilteredData(gyro_data.y);
     m_filtered_heading.yaw = m_yaw_filter->getFilteredData(gyro_data.z);
+    //std::cout << "gyro_angles: " << m_filtered_attitude.pitch << m_filtered_heading.yaw << std::endl;
+    //Logger::getAssignedLogger()->log("gyro_angles: ", m_filtered_attitude.pitch, m_filtered_heading.yaw,LoggerLevel::Warning);
+    //Logger::getAssignedLogger()->logtofile("gyro_angles: ", m_filtered_attitude.pitch, m_filtered_heading.yaw, LoggerLevel::Error);
+    //std::cout << "getting called" << std::endl;
 }
 
 Vector3D<float> GyroOrientationObserver::getBodyRate()
@@ -47,7 +50,6 @@ void GyroOrientationObserver::receive_msg_data(DataMessage* t_msg)
     {
         ThreeAxisSensorMsg* t_sensor_msg = (ThreeAxisSensorMsg*) t_msg;
         gyro_data = t_sensor_msg->data;
+        loopInternal();
     }
-    
-    loopInternal();
 }

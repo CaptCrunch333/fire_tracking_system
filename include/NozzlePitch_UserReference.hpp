@@ -1,6 +1,7 @@
 #pragma once
 #include "UserReference.hpp"
 #include "ControlSystemMessage.hpp"
+#include "UpdateNozzlePoseMessage.hpp"
 
 class NozzlePitch_UserReference : public UserReference{
 

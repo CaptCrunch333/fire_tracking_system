@@ -80,7 +80,7 @@ void StdLogger::logtofile(const char* t_log, float t_para_1, LoggerLevel t_log_l
 {
     if(m_file_logging_enabled)
     {
-        if((int) file_logger_level >= (int) t_log_level)
+        if((int) file_logger_level <= (int) t_log_level)
         {
             m_log_file << t_log << "," << t_para_1 << endl;
         }
@@ -91,7 +91,7 @@ void StdLogger::logtofile(const char* t_log, float t_para_1, float t_para_2, Log
 {
     if(m_file_logging_enabled)
     {
-        if((int) file_logger_level >= (int) t_log_level)
+        if((int) file_logger_level <= (int) t_log_level)
         {
             m_log_file << t_log << "," << t_para_1 << "," << t_para_2 << endl;
         }
@@ -102,7 +102,7 @@ void StdLogger::logtofile(const char* t_log, float t_para_1 , float t_para_2, fl
 {
     if(m_file_logging_enabled)
     {
-        if((int) file_logger_level >= (int) t_log_level)
+        if((int) file_logger_level <= (int) t_log_level)
         {
             m_log_file << t_log << "," << t_para_1 << "," << t_para_2 << "," << t_para_3 << endl;
         }

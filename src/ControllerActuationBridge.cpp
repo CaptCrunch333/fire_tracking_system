@@ -13,14 +13,16 @@ void ControllerActuationBridge::receive_msg_data(DataMessage* t_msg)
             {
                 m_ctrl_output_msg.setControlSignal(control_system_msg->getData(), control_system::pitch);
                 this->emit_message((DataMessage*) &m_ctrl_output_msg);
-                Logger::getAssignedLogger()->log("Pitch motor %f and PID %f ", m_ctrl_output_msg.getControlSignal(), pid_p ,LoggerLevel::Warning);
+                Logger::getAssignedLogger()->log("Pitch motor %f and PID %f ", m_ctrl_output_msg.getControlSignal() ,LoggerLevel::Warning);
+                //Logger::getAssignedLogger()->logtofile("pitch_motor: ", m_ctrl_output_msg.getControlSignal() ,LoggerLevel::Error);
                 break;
             }
             case control_system::yaw:
             {
                 m_ctrl_output_msg.setControlSignal(control_system_msg->getData(), control_system::yaw);
                 this->emit_message((DataMessage*) &m_ctrl_output_msg);
-                Logger::getAssignedLogger()->log("Yaw motor %f and PID %f ", m_ctrl_output_msg.getControlSignal() , pid_y, LoggerLevel::Warning);
+                Logger::getAssignedLogger()->log("Yaw motor %f and PID %f ", m_ctrl_output_msg.getControlSignal(), LoggerLevel::Warning);
+                //Logger::getAssignedLogger()->logtofile("yaw_motor: ", m_ctrl_output_msg.getControlSignal() ,LoggerLevel::Error);
                 break;
             }
             default:

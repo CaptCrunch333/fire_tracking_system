@@ -5,7 +5,6 @@
 #include <vector>
 #include "ControlSystemMessage.hpp"
 #include "PID_values.hpp"
-#include "UpdatePoseMessage.hpp"
 #include "PVProvider.hpp"
 #include "ReferenceMessage.hpp"
 #include "TimedBlock.hpp"
@@ -21,21 +20,15 @@ class ControlSystem : public TimedBlock, public msg_emitter, public msg_receiver
         std::vector<Switcher*> _switchers;
         block_frequency _frequency;
         // ControlSystem();
-        ReferenceMessage m_ref_msg_x;
-        ReferenceMessage m_ref_msg_y;
-        ReferenceMessage m_ref_msg_z;
-        ReferenceMessage m_ref_msg_yaw;
 
         ControlSystemMessage m_output_msg;
 
         ROSMsg m_ros_msg;
 
-        ReferenceMessage m_ref_out_msg;
-
         ControlSystemMessage m_provider_data_msg;
-        ControlSystemMessage m_switch_msg;
         ControlSystemMessage m_add_block_msg;
         ControlSystemMessage m_change_PID_msg;
+        ControlSystemMessage m_switch_msg;
         float _dt;
 
     public:

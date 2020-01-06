@@ -29,6 +29,7 @@ void NozzleOrientationProvider::receive_msg_data(DataMessage* t_msg)
         m_heading.yaw = t_nozzle_msg->yaw * 180/M_PI;
         //Logger::getAssignedLogger()->log("pitch: %f", m_att.pitch, LoggerLevel::Info);
         //Logger::getAssignedLogger()->log("yaw: %f", m_heading.yaw, LoggerLevel::Info);
+        Logger::getAssignedLogger()->logtofile("cam_angles: ", m_att.pitch, m_heading.yaw, LoggerLevel::Error);
     }
     else if(t_msg->getType() == msg_type::THREEAXISSENSORMSG)
     {
@@ -39,5 +40,6 @@ void NozzleOrientationProvider::receive_msg_data(DataMessage* t_msg)
         // Logger::getAssignedLogger()->log("x: %f", m_rate.x, LoggerLevel::Info);
         // Logger::getAssignedLogger()->log("y: %f", m_rate.y, LoggerLevel::Info);
         // Logger::getAssignedLogger()->log("z: %f", m_rate.z, LoggerLevel::Info);
+        Logger::getAssignedLogger()->logtofile("gyro_angles: ", m_rate.x, m_rate.z, LoggerLevel::Error);
     }
 }
