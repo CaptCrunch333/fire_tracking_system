@@ -13,4 +13,5 @@ public:
 
 	float pitch = 0;
 	float yaw = 0;
+	bool fire_found = false;
 };

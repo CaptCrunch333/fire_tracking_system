@@ -5,9 +5,9 @@ ComplementaryFilter::ComplementaryFilter()
 
 }
 
-void ComplementaryFilter::resetFilter(void)
+void ComplementaryFilter::resetFilter(int t_integrator)
 {
-	prev_filtered_data = 0;
+	prev_filtered_data = t_integrator;
 }
 
 void ComplementaryFilter::setFilterSettings(FilterSettings* t_filter_settings)

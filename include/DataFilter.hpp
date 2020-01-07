@@ -7,7 +7,7 @@ class DataFilter
 {	
 public:
 
-	virtual void resetFilter(void) = 0;
+	virtual void resetFilter(int) = 0;
 	virtual void setFilterSettings(FilterSettings*) = 0;
 	virtual float getFilteredData(float) = 0;
 	virtual float getFilteredData(float, float) = 0;

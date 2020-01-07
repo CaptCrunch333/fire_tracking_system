@@ -9,7 +9,7 @@ class ComplementaryFilter : public DataFilter
 public:
 
 	ComplementaryFilter();
-	void resetFilter(void);
+	void resetFilter(int);
 	void setFilterSettings(FilterSettings*);
 	float getFilteredData(float);
 	float getFilteredData(float, float);
