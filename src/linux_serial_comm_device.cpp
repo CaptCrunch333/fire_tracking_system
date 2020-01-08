@@ -17,16 +17,17 @@ LinuxSerialCommDevice::~LinuxSerialCommDevice()
     pthread_join(this->m_thread_id, NULL);
 }
 
-void LinuxSerialCommDevice::attach_hardware_sender(void* sender_obj)
+bool LinuxSerialCommDevice::attach_hardware_sender(void* sender_obj)
 {
     m_dev_path = (string*) sender_obj;
     m_serial_port = open(m_dev_path->c_str(), O_RDWR, O_NOCTTY);
     if (m_serial_port == -1)
-     {
+    {
         perror("open_port: Unable to open port ");
         std::cout << m_dev_path->c_str() << std::endl;
-        exit(1);
-     }
+        return false;
+        //exit(1);
+    }
     // //***** Enabling interrupts *****//
     // m_incoming_signal_handler.sa_handler = receive_data_from_hardware;
     // m_incoming_signal_handler.sa_flags = 0;
@@ -71,11 +72,20 @@ void LinuxSerialCommDevice::attach_hardware_sender(void* sender_obj)
     m_IO_handler.c_cc[VMIN] = 0;
 
     // Save tty settings, also checking for error
-    if (tcsetattr(m_serial_port, TCSANOW, &m_IO_handler) != 0) {
+    if (tcsetattr(m_serial_port, TCSANOW, &m_IO_handler) != 0)
+    {
         printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
+        return false;
     }
     A = this;
     pthread_create(&(A->m_thread_id), NULL, A->checkReceiver, NULL);
+    return true;
+}
+
+void LinuxSerialCommDevice::reset_hardware(void* sender_obj)
+{
+    close(m_serial_port);
+    this->attach_hardware_sender(sender_obj);
 }
 
 void LinuxSerialCommDevice::receive_data_from_hardware(int t_status)

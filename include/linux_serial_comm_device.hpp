@@ -32,8 +32,9 @@ class LinuxSerialCommDevice : public CommDevice
 
         LinuxSerialCommDevice();
         ~LinuxSerialCommDevice();
-        void attach_hardware_sender(void* sender_obj) override;
+        bool attach_hardware_sender(void* sender_obj) override;
         void attach_hardware_callback(void* call_back_obj) override;
+        void reset_hardware(void* sender_obj);
         void send_data_to_hardware(DataMessage* ) override;
         void receive_msg_data(DataMessage*);
         void receive_data_from_hardware(int);

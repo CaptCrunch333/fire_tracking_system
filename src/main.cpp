@@ -1,6 +1,7 @@
 #define USING_CPP
 #include "linux_serial_comm_device.hpp"
 #include "BaseCommunication.hpp"
+#include "CommChecker.hpp"
 #include "Lepton3_5.hpp"
 #include "HeatCenterProvider.hpp"
 #include "GyroOrientationObserver.hpp"
@@ -24,17 +25,14 @@ int main(int argc, char** argv)
     ros::Rate rate(10);
     // ************************************ LOGGER ************************************
     Logger::assignLogger(new StdLogger());
-    Logger::getAssignedLogger()->log("start of logger", LoggerLevel::Warning);
+    Logger::getAssignedLogger()->log("start of logger", LoggerLevel::Info);
     Logger::getAssignedLogger()->enableFileLog(LoggerLevel::Error);
     // ********************************************************************************
     // ***************************** COMMUNICATION DEVICE *****************************
     LinuxSerialCommDevice* main_comm_dev = new LinuxSerialCommDevice;
     BaseCommunication* main_comm_stack = new BaseCommunication((CommDevice*) main_comm_dev);
     std::string port_add = "/dev/ttyACM0";
-    main_comm_dev->attach_hardware_sender((void*) &(port_add));
-    // ********************************************************************************
-    // *************************** Communication Overseer *****************************
-    
+    CommChecker* main_checker = new CommChecker(main_comm_dev, (void*) &port_add);
     // ********************************************************************************
     // *************************** THERMAL IMAGE PROVIDERS ****************************
     ROSUnit* myImageConverter = new ImageConverter("/lepton_topic", nh);
@@ -95,6 +93,8 @@ int main(int argc, char** argv)
     ControllerActuationBridge* main_ctrl_actuation_bridge = new ControllerActuationBridge();
     // ********************************************************************************
     // *****************************  SYSTEM CONNECTIONS ******************************
+    main_checker->add_callback_msg_receiver((msg_receiver*) main_comm_stack);
+    main_comm_stack->add_callback_msg_receiver((msg_receiver*) main_checker);
     myImageConverter->add_callback_msg_receiver((msg_receiver*) main_thermal_camera);
     main_thermal_camera->add_callback_msg_receiver((msg_receiver*) main_heatcenter_prov);
     main_heatcenter_prov->add_callback_msg_receiver((msg_receiver*) main_orientation_provider);
