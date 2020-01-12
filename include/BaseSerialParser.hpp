@@ -8,7 +8,9 @@
 #include "SerialDataMsg.hpp"
 #include "NozzleOrientationMsg.hpp"
 #include "MsgHandler.hpp"
+#include "HeartbeatMsg.hpp"
 #include "ControllerOutputMsg.hpp"
+#include "logger.hpp"
 
 class BaseSerialParser : public msg_receiver, public msg_emitter
 {

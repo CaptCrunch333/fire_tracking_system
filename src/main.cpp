@@ -31,8 +31,8 @@ int main(int argc, char** argv)
     // ***************************** COMMUNICATION DEVICE *****************************
     LinuxSerialCommDevice* main_comm_dev = new LinuxSerialCommDevice;
     BaseCommunication* main_comm_stack = new BaseCommunication((CommDevice*) main_comm_dev);
-    std::string port_add = "/dev/ttyACM0";
-    CommChecker* main_checker = new CommChecker(main_comm_dev, (void*) &port_add);
+    std::string port_add = "/dev/NozzleMC";
+    CommChecker* main_checker = new CommChecker(main_comm_dev, (void*) &port_add, block_frequency::hz10);
     // ********************************************************************************
     // *************************** THERMAL IMAGE PROVIDERS ****************************
     ROSUnit* myImageConverter = new ImageConverter("/lepton_topic", nh);
@@ -114,13 +114,15 @@ int main(int argc, char** argv)
     tmp_emitter.emit_message((DataMessage*) &tmp_user_ref_msg);
     // ***********************************  LOOPER ************************************
     // ********************************************************************************
-    pthread_t loop100hz_func_id;
+    pthread_t loop10hz_func_id, loop100hz_func_id;
     Looper* main_looper = new Looper();
     main_looper->addTimedBlock((TimedBlock*) CamPitch_ControlSystem);
     main_looper->addTimedBlock((TimedBlock*) CamYaw_ControlSystem);
+    main_looper->addTimedBlock((TimedBlock*) main_checker);
     pthread_create(&loop100hz_func_id, NULL, &Looper::Loop100Hz, NULL);
+    pthread_create(&loop10hz_func_id, NULL, &Looper::Loop10Hz, NULL);
     // ********************************************************************************
-    
+
     while(ros::ok())
     {
         ros::spinOnce();

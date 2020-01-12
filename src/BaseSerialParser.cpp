@@ -42,6 +42,12 @@ void BaseSerialParser::receive_msg_data(DataMessage* t_msg)
 					memcpy( ((uint8_t*) &temp_msg) + m_msg_handler.getMsgHeaderSize() , payload_data, payload_len);
 					emit_message((DataMessage*) &temp_msg);
 				}
+				else if(t_type == msg_type::HEARTBEAT)
+				{
+					HeartbeatMsg temp_msg;
+					//memcpy( ((uint8_t*) &temp_msg) + m_msg_handler.getMsgHeaderSize() , payload_data, payload_len);
+					emit_message((DataMessage*) &temp_msg);
+				}
 			}
     	}
 	}
