@@ -3,7 +3,7 @@
 
 UpdateNozzlePoseMessage::UpdateNozzlePoseMessage()
 {
-    _type = msg_type::UPDATEPOSEREFERENCE;
+    _type = msg_type::UPDATENOZZLEPOSEREFERENCE;
 }
 
 UpdateNozzlePoseMessage::~UpdateNozzlePoseMessage()

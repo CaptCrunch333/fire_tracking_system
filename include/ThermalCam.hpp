@@ -3,7 +3,7 @@
 #include "CamSpecs.hpp"
 #include "ImageConverter.hpp"
 #include "ThermalImageMsg.hpp"
-#include "positioning_system/temp_range.h"
+#include "fire_tracking_system/temp_range.h"
 #include "MsgReceiver.hpp"
 #include "MsgEmitter.hpp"
 

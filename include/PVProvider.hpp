@@ -4,7 +4,6 @@
 #include "AttitudeProvider.hpp"
 #include "PositioningProvider.hpp"
 #include "HeadingProvider.hpp"
-#include "VelocityProvider.hpp"
 #include "AccelerationProvider.hpp"
 
 class PVProvider : public Provider, public Vector3DMessage{

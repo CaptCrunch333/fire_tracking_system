@@ -16,6 +16,8 @@
 #include "std_logger.hpp"
 #include "ControllerActuationBridge.hpp"
 #include "looper.hpp"
+#include "ROSUnit_NozzleController.hpp"
+#include "ROSUnit_SetVectorSrv.hpp"
 
 int main(int argc, char** argv)
 {
@@ -69,6 +71,9 @@ int main(int argc, char** argv)
     CamYaw_ControlSystem->addBlock(PID_cam_yaw);
     CamYaw_ControlSystem->addBlock(PV_Ref_cam_yaw);
     // ********************************************************************************
+    // ********************************* ROS STUFF  ***********************************
+    ROSUnit_NozzleController* ROS_NozzleController = new ROSUnit_NozzleController(nh);
+    // ********************************************************************************
     // *******************************  PID PARAMETERS ********************************
     PID_parameters* pid_para_cam_pitch = new PID_parameters;
     pid_para_cam_pitch->kp = 0.0;
@@ -91,6 +96,9 @@ int main(int argc, char** argv)
     // **************************  CONTROLLER OUTPUT BRIDGE ***************************
     //TODO: this needs to be removed after the controller output msg has been adjusted
     ControllerActuationBridge* main_ctrl_actuation_bridge = new ControllerActuationBridge();
+    // ********************************************************************************
+    // *************************** Fire Tracker Logic Unit ****************************
+    //LogicUnit FireTrackingLogicUnit* = new FireTrackingLogicUnit;
     // ********************************************************************************
     // *****************************  SYSTEM CONNECTIONS ******************************
     main_checker->add_callback_msg_receiver((msg_receiver*) main_comm_stack);

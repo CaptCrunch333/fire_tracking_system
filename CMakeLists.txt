@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(fire_tracking_system)
+project(water_ext)
 
 add_compile_options(-std=c++11)
 
@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   sensor_msgs
   std_msgs
+  common_srv
   message_generation
   rospy
 )
@@ -29,7 +30,7 @@ generate_messages(
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS cv_bridge image_transport roscpp sensor_msgs std_msgs message_runtime
+  CATKIN_DEPENDS cv_bridge image_transport roscpp sensor_msgs std_msgs message_runtime common_srv
   DEPENDS
 )
 
@@ -45,5 +46,7 @@ FILE(GLOB SOURCE_FILES *.hpp *.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
         )
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_executable(${PROJECT_NAME}_node ${SOURCE_FILES})
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

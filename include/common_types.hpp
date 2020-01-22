@@ -10,7 +10,8 @@ const struct tPacketProp{
 	uint8_t pad_EOP = 0xFF;
 }PacketProp;
 
-enum class msg_type {TESTMSG, SERIALDATA ,reference, THREEAXISSENSORMSG, VELOCITY, ACCELERATION, THERMALIMAGE, optitrack, FLIGHTSCENARIO, POSITION, ATTITUDE, HEADING, NOZZLEMSG, UPDATECONTROLLER, RESETCONTROLLER, control_system, HEARTBEAT, CONTROLLEROUTPUTMSG, UPDATEPOSEREFERENCE, UPDATENOZZLEPOSEREFERENCE, controller, float_msg, BOOLEAN, INTEGER, switcher, VECTOR3D, external_reference, ack,internal_msg_start, ROS};
+//enum class msg_type {TESTMSG, SERIALDATA ,reference, THREEAXISSENSORMSG, VELOCITY, ACCELERATION, THERMALIMAGE, optitrack, FLIGHTSCENARIO, POSITION, ATTITUDE, HEADING, NOZZLEMSG, UPDATECONTROLLER, RESETCONTROLLER, control_system, HEARTBEAT, CONTROLLEROUTPUTMSG, UPDATEPOSEREFERENCE, UPDATENOZZLEPOSEREFERENCE, controller, float_msg, BOOLEAN, INTEGER, switcher, VECTOR3D, VECTOR, external_reference, ack,internal_msg_start, ROS};
+enum class msg_type {SERIALDATA ,reference, THREEAXISSENSORMSG, ACCELERATION, THERMALIMAGE, FLIGHTSCENARIO, POSITION, ATTITUDE, HEADING, NOZZLEMSG, UPDATECONTROLLER, RESETCONTROLLER, control_system, HEARTBEAT, CONTROLLEROUTPUTMSG, UPDATENOZZLEPOSEREFERENCE, controller, float_msg, WATEREXTSTATE, switcher, VECTOR3D, VECTOR, internal_msg_start, ROS};
 enum class msg_type_optitrack {position, attitude};
 enum class msg_type_flight_scenario {USER, SET_PID};
 enum class control_system {roll=3, pitch=4, yaw=5, x=0, y=1, z=2, pitch_rate = 6, yaw_rate = 7, null_type};

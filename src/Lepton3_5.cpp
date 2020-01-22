@@ -26,7 +26,7 @@ Lepton3_5::Lepton3_5()
 	_lepton_specs.ang_per_py = ((float)_lepton_specs.VFOV)/((float)_lepton_specs.height);
 	_lepton_specs.pixel_size = (_lepton_specs.HFOV/_lepton_specs.width)*(_lepton_specs.VFOV/_lepton_specs.height); //in degrees
 	_cam_mode = 0;		// the mode represents 2 options [0-> auto grey scale/ 1-> Fixed grey scale]. 
-	temp_range = _n.subscribe<positioning_system::temp_range>("/temp_range", 1, dyn_temp);
+	temp_range = _n.subscribe<fire_tracking_system::temp_range>("/temp_range", 1, dyn_temp);
 	m_image.cam_spec = _lepton_specs;
 }
 
@@ -70,7 +70,7 @@ float Lepton3_5::getPixelScale(void)
 	return ((float)_lepton_specs.HFOV)/((float)_lepton_specs.width )*(M_PI*1000.f/180.f); 
 }
 
-void Lepton3_5::dyn_temp(const positioning_system::temp_range::ConstPtr& msg)
+void Lepton3_5::dyn_temp(const fire_tracking_system::temp_range::ConstPtr& msg)
 {
 	m_image.temp_min = (float) msg->min;
 	m_image.temp_max = (float) msg->max;
