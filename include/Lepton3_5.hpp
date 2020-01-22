@@ -36,5 +36,5 @@ private:
 	int _cam_mode;
 	float _pixel_scale;
 	
-	static void dyn_temp(const fire_tracking_system::temp_range::ConstPtr& msg);
+	static void dyn_temp(const water_ext::temp_range::ConstPtr& msg);
 };
