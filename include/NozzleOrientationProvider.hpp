@@ -6,6 +6,7 @@
 #include "NozzleOrientationMsg.hpp"
 #include "ThreeAxisSensorMsg.hpp"
 #include "logger.hpp"
+#include "WaterExtMissionStateManager.hpp"
 
 class NozzleOrientationProvider : public Pitch_PVProvider, 
                                   public Roll_PVProvider,

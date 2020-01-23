@@ -39,7 +39,7 @@ DataMessage* PIDController::receive_msg_internal(DataMessage* t_msg){
 	command = pid_direct(data.x, data.y, data.z);
 
 	// std::cout << "pid_output: " << command << std::endl;
-    m_output_msg.setFloatMessage(command);
+    m_output_msg.data = command;
 
 	return (DataMessage*) &m_output_msg;
 }

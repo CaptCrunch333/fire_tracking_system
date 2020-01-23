@@ -3,17 +3,17 @@
 #include <math.h>
 #include "ControllerMessage.hpp"
 #include "PID_values.hpp"
-#include "FloatMessage.hpp"
+#include "FloatMsg.hpp"
 #include "Controller.hpp"
 #include "SwitcherMessage.hpp"
-#include "FloatMessage.hpp"
+#include "FloatMsg.hpp"
 #include "ResetControllerMsg.hpp"
 
 class PIDController : public Controller{
 
     private:
         controller_type _controller_type;
-        FloatMessage m_output_msg;
+        FloatMsg m_output_msg;
         block_id _name;
         //Chehadeh's code
         PID_parameters parameters;

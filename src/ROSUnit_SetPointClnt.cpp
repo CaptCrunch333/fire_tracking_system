@@ -1,17 +1,18 @@
-#include "ROSUnit_SetPoint.hpp"
+#include "ROSUnit_SetPointClnt.hpp"
 
-ROSUnit_SetPoint::ROSUnit_SetPoint(std::string t_name, ros::NodeHandle& t_main_handler) : ROSUnit(t_main_handler)
+ROSUnit_SetPointClnt::ROSUnit_SetPointClnt(std::string t_name, ros::NodeHandle& t_main_handler) : ROSUnit(t_main_handler)
 {
     m_client = t_main_handler.serviceClient<common_srv::set_point>(t_name);
 }
 
-ROSUnit_SetPoint::~ROSUnit_SetPoint()
+ROSUnit_SetPointClnt::~ROSUnit_SetPointClnt()
 {
 
 }
 
-void ROSUnit_SetPoint::receive_msg_data(DataMessage* t_msg)
+void ROSUnit_SetPointClnt::receive_msg_data(DataMessage* t_msg)
 {
+    //Change the below code to match your received msg
     if(t_msg->getType() == msg_type::VECTOR3D)
     {
         common_srv::set_point t_srv;

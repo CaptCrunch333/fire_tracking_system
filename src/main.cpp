@@ -1,4 +1,6 @@
 #define USING_CPP
+#include "WaterExtMissionStateManager.hpp"
+#include "TimedSwitch.hpp"
 #include "linux_serial_comm_device.hpp"
 #include "BaseCommunication.hpp"
 #include "CommChecker.hpp"
@@ -18,6 +20,8 @@
 #include "looper.hpp"
 #include "ROSUnit_NozzleController.hpp"
 #include "ROSUnit_SetVectorSrv.hpp"
+#include "ROSUnit_Factory.hpp"
+
 
 int main(int argc, char** argv)
 {
@@ -28,7 +32,7 @@ int main(int argc, char** argv)
     // ************************************ LOGGER ************************************
     Logger::assignLogger(new StdLogger());
     Logger::getAssignedLogger()->log("start of logger", LoggerLevel::Info);
-    Logger::getAssignedLogger()->enableFileLog(LoggerLevel::Error);
+    //Logger::getAssignedLogger()->enableFileLog(LoggerLevel::Error);
     // ********************************************************************************
     // ***************************** COMMUNICATION DEVICE *****************************
     LinuxSerialCommDevice* main_comm_dev = new LinuxSerialCommDevice;
@@ -97,9 +101,15 @@ int main(int argc, char** argv)
     //TODO: this needs to be removed after the controller output msg has been adjusted
     ControllerActuationBridge* main_ctrl_actuation_bridge = new ControllerActuationBridge();
     // ********************************************************************************
-    // *************************** Fire Tracker Logic Unit ****************************
-    //LogicUnit FireTrackingLogicUnit* = new FireTrackingLogicUnit;
-    // ********************************************************************************
+	// **********************************  ROS UNITS **********************************
+	ROSUnit_Factory main_ROSUnitFactory(nh);
+	ROSUnit* InternalStateUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "/water_ext/set_mission_state");
+    ROSUnit* EnvCondUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "/water_ext/set_environment_cond");
+    ROSUnit* FireStateUpdaterClnt = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_msg_type::ROSUnit_Int, "/water_ext/update_fire_state");
+    ROSUnit* WaterLevelRequesterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Empty, "/water_ext/get_water_level");
+    ROSUnit* WaterLevelUpdaterClnt = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_msg_type::ROSUnit_Int, "/ex_bldg_fire_mm/update_water_level");
+    ROSUnit* FireDistanceUpdaterSub = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Subscriber, ROSUnit_msg_type::ROSUnit_Float, "/ugv_nav/distance_to_fire");
+	// ********************************************************************************
     // *****************************  SYSTEM CONNECTIONS ******************************
     main_checker->add_callback_msg_receiver((msg_receiver*) main_comm_stack);
     main_comm_stack->add_callback_msg_receiver((msg_receiver*) main_checker);
@@ -112,6 +122,7 @@ int main(int argc, char** argv)
     CamPitch_ControlSystem->add_callback_msg_receiver((msg_receiver*) main_ctrl_actuation_bridge);
     CamYaw_ControlSystem->add_callback_msg_receiver((msg_receiver*) main_ctrl_actuation_bridge);
     main_ctrl_actuation_bridge->add_callback_msg_receiver((msg_receiver*) main_comm_stack);
+    InternalStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) &waterExtMissionStateManager);
     // ********************************************************************************
     // ************************ Initialize Reference To Zero **************************
     msg_emitter tmp_emitter;
@@ -130,13 +141,10 @@ int main(int argc, char** argv)
     pthread_create(&loop100hz_func_id, NULL, &Looper::Loop100Hz, NULL);
     pthread_create(&loop10hz_func_id, NULL, &Looper::Loop10Hz, NULL);
     // ********************************************************************************
-
     while(ros::ok())
     {
         ros::spinOnce();
         rate.sleep();
     }
-
     return 0;
-
 }
