@@ -2,14 +2,15 @@
 
 #include <string>
 #include <fstream>
+#include "logger.hpp"
 
-class WaterTankLUT
+class LUT2D
 {
 	public:
 		void setLUT(std::string);
-		int getWaterLevel(int);
+		float getVal(float);
 	
 	private:
-		int m_LUT[100][2];
+		float m_LUT[100][2];
 		int m_length;
 };

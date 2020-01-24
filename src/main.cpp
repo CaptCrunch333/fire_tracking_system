@@ -1,14 +1,10 @@
 #define USING_CPP
-#include "WaterExtMissionStateManager.hpp"
-#include "TimedSwitch.hpp"
 #include "linux_serial_comm_device.hpp"
 #include "BaseCommunication.hpp"
 #include "CommChecker.hpp"
 #include "Lepton3_5.hpp"
 #include "HeatCenterProvider.hpp"
-#include "GyroOrientationObserver.hpp"
 #include "ComplementaryFilter.hpp"
-#include "DataMessage.hpp"
 #include "ImageConverter.hpp"
 #include "NozzlePitch_UserReference.hpp"
 #include "NozzleYaw_UserReference.hpp"
@@ -18,10 +14,8 @@
 #include "std_logger.hpp"
 #include "ControllerActuationBridge.hpp"
 #include "looper.hpp"
-#include "ROSUnit_NozzleController.hpp"
-#include "ROSUnit_SetVectorSrv.hpp"
 #include "ROSUnit_Factory.hpp"
-
+#include "PumpController.hpp"
 
 int main(int argc, char** argv)
 {
@@ -75,9 +69,6 @@ int main(int argc, char** argv)
     CamYaw_ControlSystem->addBlock(PID_cam_yaw);
     CamYaw_ControlSystem->addBlock(PV_Ref_cam_yaw);
     // ********************************************************************************
-    // ********************************* ROS STUFF  ***********************************
-    ROSUnit_NozzleController* ROS_NozzleController = new ROSUnit_NozzleController(nh);
-    // ********************************************************************************
     // *******************************  PID PARAMETERS ********************************
     PID_parameters* pid_para_cam_pitch = new PID_parameters;
     pid_para_cam_pitch->kp = 0.0;
@@ -101,7 +92,14 @@ int main(int argc, char** argv)
     //TODO: this needs to be removed after the controller output msg has been adjusted
     ControllerActuationBridge* main_ctrl_actuation_bridge = new ControllerActuationBridge();
     // ********************************************************************************
-	// **********************************  ROS UNITS **********************************
+    // ******************************* PUMP CONTROLLER ********************************
+    PumpController* mainPumpController = new PumpController;
+    LUT2D* waterTankLUT = new LUT2D;
+    waterTankLUT->setLUT("/home/ffuav01/MBZIRC_ws/src/water_ext/config/LUT.txt");
+    mainPumpController->setMaximumTriggeringDistance(1);
+    mainPumpController->setLookUpTable(waterTankLUT);
+    // ********************************************************************************
+    // **********************************  ROS UNITS **********************************
 	ROSUnit_Factory main_ROSUnitFactory(nh);
 	ROSUnit* InternalStateUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "/water_ext/set_mission_state");
     ROSUnit* EnvCondUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "/water_ext/set_environment_cond");
@@ -109,7 +107,7 @@ int main(int argc, char** argv)
     ROSUnit* WaterLevelRequesterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Empty, "/water_ext/get_water_level");
     ROSUnit* WaterLevelUpdaterClnt = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_msg_type::ROSUnit_Int, "/ex_bldg_fire_mm/update_water_level");
     ROSUnit* FireDistanceUpdaterSub = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Subscriber, ROSUnit_msg_type::ROSUnit_Float, "/ugv_nav/distance_to_fire");
-	// ********************************************************************************
+    // ********************************************************************************
     // *****************************  SYSTEM CONNECTIONS ******************************
     main_checker->add_callback_msg_receiver((msg_receiver*) main_comm_stack);
     main_comm_stack->add_callback_msg_receiver((msg_receiver*) main_checker);

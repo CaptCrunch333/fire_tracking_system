@@ -41,7 +41,6 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS}
 )
 
-
 FILE(GLOB SOURCE_FILES *.hpp *.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
         )

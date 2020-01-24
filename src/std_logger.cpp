@@ -31,6 +31,7 @@ void StdLogger::log(const char* t_log, float t_para_1, float t_para_2, LoggerLev
 void StdLogger::log(const char* t_log, float t_para_1 , float t_para_2, float t_para_3, LoggerLevel t_log_level){
     printLogLevel(t_log_level);
 	printf(t_log, t_para_1, t_para_2,t_para_3);
+    printf("\n");
 }
 
 void StdLogger::enableFileLog(LoggerLevel t_loggerlevel)
