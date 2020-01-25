@@ -21,7 +21,7 @@ void PIDController::receive_msg_data(DataMessage* t_msg){
 		ResetControllerMsg* reset_msg = (ResetControllerMsg*)t_msg;
 
 		if(static_cast<block_id>(reset_msg->getData()) == this->_name){
-			std::cout << "RESET CONTROLLER: " << (int)this->_name << std::endl;
+			Logger::getAssignedLogger()->log("RESET CONTROLLER: &f", (float)this->_name, LoggerLevel::Info);
 			this->reset();
 		}
 	}
@@ -32,13 +32,9 @@ DataMessage* PIDController::receive_msg_internal(DataMessage* t_msg){
 	SwitcherMessage* controller_msg = (SwitcherMessage*)t_msg;
 
     Vector3D<float> data = controller_msg->getVector3DData();
-	// std::cout << "error: " << data.x << std::endl;
-	// std::cout << "pv_first: " << data.y << std::endl;
-	// std::cout << "pv_second: " << data.z << std::endl;
     float command;
 	command = pid_direct(data.x, data.y, data.z);
 
-	// std::cout << "pid_output: " << command << std::endl;
     m_output_msg.data = command;
 
 	return (DataMessage*) &m_output_msg;
@@ -76,15 +72,14 @@ void PIDController::initialize(void* para){ //Refer to example 1 on how to initi
 	prev2_err = 0;
 	prev_pv_rate = 0;
 
-	std::cout << "PID SETTINGS: " << std::endl;
-	std::cout << "Kp Term: " << parameters.kp << std::endl;
-	std::cout << "Ki Term: " << parameters.ki << std::endl;
-	std::cout << "Kd Term: " << parameters.kd << std::endl;
-	std::cout << "Kdd Term: " << parameters.kdd << std::endl;
-	std::cout << "Anti Windup Term: " << parameters.anti_windup << std::endl;
-	std::cout << "en_pv_derivation Term: " << static_cast<int>(parameters.en_pv_derivation) << std::endl;
-	std::cout << "ID Term: " << static_cast<int>(parameters.id) << std::endl;
-
+	Logger::getAssignedLogger()->log("PID SETTINGS: ",  LoggerLevel::Info);
+	Logger::getAssignedLogger()->log("Kp Term: %f", parameters.kp, LoggerLevel::Info);
+	Logger::getAssignedLogger()->log("Ki Term: %f", parameters.ki, LoggerLevel::Info);
+	Logger::getAssignedLogger()->log("Kd Term: %f", parameters.kd, LoggerLevel::Info);
+	Logger::getAssignedLogger()->log("Kdd Term: %f", parameters.kdd, LoggerLevel::Info);
+	Logger::getAssignedLogger()->log("Anti Windup Term: %f", parameters.anti_windup, LoggerLevel::Info);
+	Logger::getAssignedLogger()->log("en_pv_derivation Term: %f", static_cast<float>(parameters.en_pv_derivation), LoggerLevel::Info);
+	Logger::getAssignedLogger()->log("ID Term: %f", static_cast<float>(parameters.id), LoggerLevel::Info);
 }
 
 float PIDController::pid_direct(float err, float pv_first, float pv_second) { //Arbitrary large default value for pv_rate

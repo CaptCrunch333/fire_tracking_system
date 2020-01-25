@@ -6,6 +6,7 @@
 #include "logger.hpp"
 #include "TimedBlock.hpp"
 #include "HeartbeatMsg.hpp"
+#include "WaterExtMissionStateManager.hpp"
 
 class CommChecker : public msg_emitter, public msg_receiver, public TimedBlock
 {

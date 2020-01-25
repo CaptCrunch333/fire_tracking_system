@@ -1,60 +1,72 @@
 #include "PumpController.hpp"
+#include <iostream>
 
-void PumpController::setMaximumTriggeringDistance(float t_val)
+PumpController::PumpController(TimedSwitch* t_switch, LUT2D* t_LUT)
 {
-    m_TrigDist = t_val;
-}
-
-void PumpController::setHitboxSize(float)
-{
-    //TODO: Implement
-}
-
-void PumpController::setLookUpTable(LUT2D* t_LUT)
-{
+    m_switch = t_switch;
     m_LUT = t_LUT;
 }
 
 void PumpController::receive_msg_data(DataMessage* t_msg)
 {
-    FloatMsg* t_dist = (FloatMsg*) t_msg;
-    if(t_msg->getType() == msg_type::FLOAT)
+    if(t_msg->getType() == msg_type::INTEGER)
     {
-        if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Armed_Idle)
+        FireState curr_fire_state = (FireState) ((IntegerMsg*) t_msg)->data;
+        if(curr_fire_state == FireState::DETECTED_INRANGE)
         {
-            if(m_LUT->getVal(m_switch.getRunningTime()) > 0)
+            if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Armed_Idle)
             {
-                if(t_dist->data <= m_TrigDist)
+                if(m_LUT->getVal(m_switch->getRunningTime()) > 0)
                 {
-                    m_switch.setState(true);
+                    m_switch->setState(true);
                     waterExtMissionStateManager.updateMissionState(WaterFireExtState::Armed_Extinguishing);
                 }
             }
-        }
-        else if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Armed_Extinguishing)
-        {
-            if(m_LUT->getVal(m_switch.getRunningTime()) > 0)
+            else if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Armed_Extinguishing)
             {
-                if(t_dist->data > m_TrigDist)
+                if(m_LUT->getVal(m_switch->getRunningTime()) > 0)
                 {
-                    m_switch.setState(false);
-                    waterExtMissionStateManager.updateMissionState(WaterFireExtState::Armed_Idle);
+                    float m_current_water_level = m_LUT->getVal(m_switch->getRunningTime());
+                    m_water_ejected += m_prev_water_level - m_current_water_level;
+                    m_prev_water_level = m_current_water_level;
+                    WaterEjectedMsg t_water_level_msg;
+                    t_water_level_msg.data = m_water_ejected;
+                    this->emit_message((DataMessage*) &m_water_ejected);
+                }
+                else
+                {
+                    m_switch->setState(false);
+                    waterExtMissionStateManager.updateMissionState(WaterFireExtState::OutOfWater);
                 }
             }
-            else
+        }
+        else if(curr_fire_state == FireState::DETECTED_OUTOFRANGE)
+        {
+            if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Armed_Extinguishing)
             {
-                m_switch.setState(false);
-                waterExtMissionStateManager.updateMissionState(WaterFireExtState::OutOfWater);
+                m_switch->setState(false);
+                waterExtMissionStateManager.updateMissionState(WaterFireExtState::Armed_Idle);
             }
         }
-        else if(m_switch.getState() == true)
+        else if(curr_fire_state == FireState::EXTINGUISHED)
         {
-            m_switch.setState(false);
+            Logger::getAssignedLogger()->log("Fire Successfully Extinguished - Turning Pump Off", LoggerLevel::Info);
+            m_switch->setState(false);
+        }
+        else if(curr_fire_state == FireState::NOTDETECTED)
+        {
+            if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Idle)
+            {
+                Logger::getAssignedLogger()->log("Reseting Water Level", LoggerLevel::Info);
+                m_switch->resetSwitch();
+                waterExtMissionStateManager.updateMissionState(WaterFireExtState::Unarmed);
+            }
         }
     }
-}
-
-void PumpController::add_callback_msg_receiver(msg_receiver* t_rec)
-{
-    m_switch.add_callback_msg_receiver(t_rec);
+    else if(t_msg->getType() == msg_type::EMPTY)
+    {
+        WaterTankLevelMsg t_float_msg;
+        t_float_msg.data = m_LUT->getVal(m_switch->getRunningTime());
+        this->emit_message((DataMessage*) &t_float_msg);
+    }
 }

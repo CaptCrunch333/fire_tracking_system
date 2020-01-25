@@ -1,5 +1,5 @@
 #include "LUT2D.hpp"
-#define DEBUG_LUT
+//#define DEBUG_LUT
 void LUT2D::setLUT(std::string t_path)
 {
     std::ifstream t_file;
@@ -51,6 +51,6 @@ float LUT2D::getVal(float t_time)
                 return m_LUT[i-1][1]*weight1 + m_LUT[i][1]*weight2;
             }
         }
-        m_LUT[m_length - 1][1];
+        return m_LUT[m_length - 1][1];
     }
 }

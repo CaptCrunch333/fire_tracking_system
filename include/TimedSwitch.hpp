@@ -19,5 +19,5 @@ public:
 private:
 
 	ControlledTimer m_timer;
-	bool m_state = true;
+	bool m_state = false;
 };

@@ -21,7 +21,8 @@ void NozzleOrientationProvider::updateSettings(FilterSettings* t_settings)
 
 void NozzleOrientationProvider::loopInternal()
 {
-    if(waterExtMissionStateManager.getMissionState() >= WaterFireExtState::Unarmed)
+    if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Armed_Idle ||
+        waterExtMissionStateManager.getMissionState() == WaterFireExtState::Armed_Extinguishing)
     {
         m_filtered_attitude.pitch = m_pitch_filter->getFilteredData(cam_data.x, gyro_data.x);
         //m_filtered_attitude.roll = m_roll_filter->getFilteredData(gyro_data.y);

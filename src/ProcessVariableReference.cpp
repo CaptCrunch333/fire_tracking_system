@@ -15,10 +15,8 @@ reference_type ProcessVariableReference::getReferenceType(){
 }
 
 DataMessage* ProcessVariableReference::receive_msg_internal(DataMessage* t_msg){
-    // std::cout << " My current Reference Variable Value: " << _reference_value << std::endl;
 
     Vector3DMessage* pos_msg = (Vector3DMessage*)t_msg;
-    // std::cout << "Data received (Process Variable): " << pos_msg->getData().x << std::endl;
     Vector3D<float> error;
 
     error.x = _reference_value - pos_msg->getData().x;

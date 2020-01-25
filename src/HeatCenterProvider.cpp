@@ -1,7 +1,5 @@
 #include "HeatCenterProvider.hpp"
 
-#include <iostream>
-
 HeatCenterProvider::HeatCenterProvider()
 {
 	
@@ -82,7 +80,7 @@ void HeatCenterProvider::getHeatCenter(ThermalImageMsg* t_msg)
 	}
 	catch(cv::Exception& e)
 	{
-		std::cout<< "ERROR " << std::endl;
+		Logger::getAssignedLogger()->log("Image Not Found", LoggerLevel::Error);
 	}
 	threshold(t_image, t_image, calcThreshold(t_msg->temp_min, t_msg->temp_max), 255, 3);	
 	calcFireCenter(t_image, (t_msg->cam_spec));
