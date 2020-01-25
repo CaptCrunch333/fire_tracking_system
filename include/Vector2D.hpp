@@ -1,13 +1,14 @@
-// Version: 2.0
+// Version: 3.0
 // Author: Mohamad Chehadeh
+// Last Modification By: Mohamad Wahbah
 // Date: 30 Dec 2019
-//Revision Note: Added static operations on vectors
+//Revision Note: Overloaded assignment operator to accept initializer list
 #pragma once 
 
 #include <cstdint>
 #include <math.h>
+#include <initializer_list>
 template <class T>  
-
 class Vector2D
 {
         public:
@@ -55,7 +56,11 @@ class Vector2D
                         this->x = tmp;
                         this->y = tmp;
                 }
-
+                void operator = (std::initializer_list<T> tmp)
+                {
+                        this->x = *tmp.begin();
+                        this->y = *(tmp.begin()+1);
+                }
                 template <typename M>
                 operator Vector2D<M>()
                 {
@@ -84,5 +89,4 @@ class Vector2D
                 static double dotProduct(Vector2D<T> vec1,Vector2D<T> vec2){
                         return vec1.x*vec2.x+vec1.y*vec2.y;
                 }
-
 };

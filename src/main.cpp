@@ -21,10 +21,10 @@
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "testing_node");
+    ros::init(argc, argv, "water_ext");
 
     ros::NodeHandle nh;
-    ros::Rate rate(10);
+    //ros::Rate rate(100);
     // ************************************ LOGGER ************************************
     Logger::assignLogger(new StdLogger());
     Logger::getAssignedLogger()->log("start of logger", LoggerLevel::Info);
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
     while(ros::ok())
     {
         ros::spinOnce();
-        rate.sleep();
+        //rate.sleep();
     }
     return 0;
 }
