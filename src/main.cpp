@@ -154,7 +154,7 @@ int main(int argc, char** argv)
     Looper* main_looper = new Looper();
     main_looper->addTimedBlock((TimedBlock*) camPitchControlSystem);
     main_looper->addTimedBlock((TimedBlock*) camYawControlSystem);
-    //main_looper->addTimedBlock((TimedBlock*) main_checker);
+    main_looper->addTimedBlock((TimedBlock*) mainCommChecker);
     pthread_create(&loop100hz_func_id, NULL, &Looper::Loop100Hz, NULL);
     pthread_create(&loop10hz_func_id, NULL, &Looper::Loop10Hz, NULL);
     // ********************************************************************************
