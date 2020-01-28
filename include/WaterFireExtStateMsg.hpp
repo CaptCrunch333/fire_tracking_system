@@ -2,7 +2,7 @@
 
 #include "DataMessage.hpp"
 #include "common_types.hpp"
-enum class WaterFireExtState {Error = -1, Idle, Unarmed, Armed_Idle, Armed_Extinguishing, Armed_Extinguished, OutOfWater};
+#include "WaterFireExtState.hpp"
 #include "WaterExtMissionStateManager.hpp"
 
 class WaterFireExtStateMsg : public DataMessage

@@ -16,4 +16,3 @@ void msg_emitter::emit_message(DataMessage* t_msg){
 }
 msg_emitter::msg_emitter(){
 }
-

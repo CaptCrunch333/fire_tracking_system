@@ -1,6 +1,7 @@
 #pragma once
 #include "MsgEmitter.hpp"
 #include "IntegerMsg.hpp"
+#include "WaterFireExtState.hpp"
 #include "WaterFireExtStateMsg.hpp"
 #include "logger.hpp"
 
