@@ -4,6 +4,10 @@ void FireAssessor::receive_msg_data(DataMessage* t_msg)
 {
     if(t_msg->getType() == msg_type::NOZZLEMSG)
     {
+        if(waterExtMissionStateManager.getMissionState()==WaterFireExtState::Idle)
+        {
+            waterExtMissionStateManager.updateMissionState(WaterFireExtState::Unarmed);
+        }
         IntegerMsg t_int_msg;
         NozzleOrientationMsg* t_orient_msg = (NozzleOrientationMsg*)t_msg;
         if(t_orient_msg->fire_found == true)

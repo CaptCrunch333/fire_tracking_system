@@ -59,7 +59,6 @@ void PumpController::receive_msg_data(DataMessage* t_msg)
             {
                 Logger::getAssignedLogger()->log("Reseting Water Level", LoggerLevel::Info);
                 m_switch->resetSwitch();
-                waterExtMissionStateManager.updateMissionState(WaterFireExtState::Unarmed);
             }
         }
     }

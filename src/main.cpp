@@ -47,6 +47,7 @@ int main(int argc, char** argv)
     NozzleYaw_UserReference* mainYawUserRef = new NozzleYaw_UserReference;
     // ********************************************************************************
     // ***************************** ORIENTATION PROVIDER *****************************
+    //TODO: add a "valve" that controls the flow of data between two blocks based on a logical expression(s)
     NozzleOrientationProvider* mainOrientationProvider = new NozzleOrientationProvider();
     Pitch_PVProvider* camPitchProvider = (Pitch_PVProvider*) mainOrientationProvider;
     Yaw_PVProvider* camYawProvider = (Yaw_PVProvider*) mainOrientationProvider;
@@ -103,6 +104,7 @@ int main(int argc, char** argv)
     PumpRosBridge* mainPumpRosBridge = new PumpRosBridge;
     // ********************************************************************************
     // ******************************** FIRE ASSESSOR *********************************
+    //TODO: add a "valve" that controls the flow of data between two blocks based on a logical expression(s)
     FireAssessor* mainFireAssessor = new FireAssessor;
     mainFireAssessor->setAngleTolerance(0.1745); //10 degrees
     mainFireAssessor->setExtinguishedTimeout(2000); //2 seconds
@@ -133,6 +135,7 @@ int main(int argc, char** argv)
     mainCtrlActuationBridge->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     InternalStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) &waterExtMissionStateManager);
     (&waterExtMissionStateManager)->add_callback_msg_receiver((msg_receiver*) StateChangeUpdaterClnt);
+    mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireDistanceUpdaterSub->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     WaterLevelRequesterSrv->add_callback_msg_receiver((msg_receiver*) mainPumpController);
