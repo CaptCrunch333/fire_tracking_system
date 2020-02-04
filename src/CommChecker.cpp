@@ -40,7 +40,7 @@ void CommChecker::receive_msg_data(DataMessage* t_msg)
     {
         if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Error)
         {
-            waterExtMissionStateManager.updateMissionState(WaterFireExtState::Idle);
+            waterExtMissionStateManager.updateMissionState(WaterFireExtState::Unarmed);
         }
         m_timer.tick();
     }
