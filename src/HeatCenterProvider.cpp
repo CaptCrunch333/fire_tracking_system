@@ -66,8 +66,8 @@ void HeatCenterProvider::calcFireAngles(int x,int y, CamSpecs cam)
 {
 	orientation.yaw = (x-(cam.width/2))*cam.ang_per_px * (M_PI/180.f);
 	orientation.pitch = (y-(cam.height/2))*cam.ang_per_py * (M_PI/180.f);
-	orientation.yaw = -1* orientation.yaw;
-	orientation.pitch = -1* orientation.pitch;
+	// orientation.yaw = -1* orientation.yaw;
+	// orientation.pitch = -1* orientation.pitch;
 	orientation.fire_found = true;
 }
 

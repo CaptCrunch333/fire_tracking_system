@@ -28,7 +28,7 @@ void NozzleOrientationProvider::loopInternal()
         //m_filtered_attitude.roll = m_roll_filter->getFilteredData(gyro_data.y);
         m_filtered_heading.yaw = m_yaw_filter->getFilteredData(cam_data.z, gyro_data.z);
 
-        //Logger::getAssignedLogger()->log("observer angles: %f , %f", m_filtered_attitude.pitch, m_filtered_heading.yaw,LoggerLevel::Warning);
+        Logger::getAssignedLogger()->log("observer angles: %f , %f", m_filtered_attitude.pitch, m_filtered_heading.yaw,LoggerLevel::Info);
         //Logger::getAssignedLogger()->logtofile("gyro_angles: ", m_filtered_attitude.pitch, m_filtered_heading.yaw, LoggerLevel::Error);
     }
 }
@@ -86,6 +86,6 @@ void NozzleOrientationProvider::receive_msg_data(DataMessage* t_msg)
             gyro_data = 0;
         }
         loopInternal();
-        //Logger::getAssignedLogger()->logtofile("gyro_angles: ", gyro_data.x, gyro_data.z, LoggerLevel::Error);
+        Logger::getAssignedLogger()->logtofile("gyro_angles: ", gyro_data.x, gyro_data.z, LoggerLevel::Error);
     }
 }

@@ -36,6 +36,7 @@ void CommChecker::loopInternal()
 
 void CommChecker::receive_msg_data(DataMessage* t_msg)
 {
+    //Logger::getAssignedLogger()->log("hearbeat rec", LoggerLevel::Info);
     if(t_msg->getType() == msg_type::HEARTBEAT)
     {
         if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Error)

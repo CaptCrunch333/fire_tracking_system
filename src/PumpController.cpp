@@ -31,7 +31,7 @@ void PumpController::receive_msg_data(DataMessage* t_msg)
                     m_prev_water_level = m_current_water_level;
                     WaterEjectedMsg t_water_level_msg;
                     t_water_level_msg.data = m_water_ejected;
-                    this->emit_message((DataMessage*) &m_water_ejected);
+                    this->emit_message((DataMessage*) &t_water_level_msg);
                 }
                 else
                 {

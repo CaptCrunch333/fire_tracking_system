@@ -18,6 +18,7 @@
 #include "PumpController.hpp"
 #include "FireAssessor.hpp"
 #include "PumpRosBridge.hpp"
+#include "Negator.hpp"
 
 int main(int argc, char** argv)
 {
@@ -40,6 +41,9 @@ int main(int argc, char** argv)
     ROSUnit* mainImageConverter = new ImageConverter("/lepton_topic", nh);
     ThermalCam* mainThermalCamera = new Lepton3_5();
     HeatCenterProvider* mainHeatcenterProv = new HeatCenterProvider();
+    Negator* cam_negator = NULL;
+    // If you want to negate the angles (camera flipped upside down) uncomment the following line:
+    // cam_negator = new Negator;
     mainHeatcenterProv->setCutOffTemperature(90.f);
     // ********************************************************************************
     // ******************************* USER REFERENCES ********************************
@@ -49,6 +53,9 @@ int main(int argc, char** argv)
     // ***************************** ORIENTATION PROVIDER *****************************
     //TODO: add a "valve" that controls the flow of data between two blocks based on a logical expression(s)
     NozzleOrientationProvider* mainOrientationProvider = new NozzleOrientationProvider();
+    Negator* gyro_negator = NULL;
+    // If you want to negate the angles (imu flipped upside down) uncomment the following line:
+    gyro_negator = new Negator;
     Pitch_PVProvider* camPitchProvider = (Pitch_PVProvider*) mainOrientationProvider;
     Yaw_PVProvider* camYawProvider = (Yaw_PVProvider*) mainOrientationProvider;
     DataFilter* pitchFilter = new ComplementaryFilter();
@@ -75,19 +82,19 @@ int main(int argc, char** argv)
     // ******************************** PID PARAMETERS ********************************
     PID_parameters* camPitchPIDPara = new PID_parameters;
     camPitchPIDPara->kp = 0.0;
-    camPitchPIDPara->ki = 0.8;
+    camPitchPIDPara->ki = 0.8; //ugv: 0.8
     camPitchPIDPara->kd = 0.0;
     camPitchPIDPara->kdd = 0.0;
-    camPitchPIDPara->anti_windup = 0.55;
+    camPitchPIDPara->anti_windup = 0.55; //ugv: 0.55
     camPitchPIDPara->en_pv_derivation = 0;
     camPitchControlSystem->changePIDSettings(camPitchPIDPara);
     
     PID_parameters* camYawPIDPara = new PID_parameters;
     camYawPIDPara->kp = 0.0;
-    camYawPIDPara->ki = 1.5;
+    camYawPIDPara->ki = 1.5; //ugv: 1.5
     camYawPIDPara->kd = 0.0;
     camYawPIDPara->kdd = 0.0;
-    camYawPIDPara->anti_windup = 0.55;
+    camYawPIDPara->anti_windup = 0.55; //ugv: 0.55
     camYawPIDPara->en_pv_derivation = 0;
     camYawControlSystem->changePIDSettings(camYawPIDPara);
     // ********************************************************************************
@@ -126,8 +133,24 @@ int main(int argc, char** argv)
     mainCommStack->add_callback_msg_receiver((msg_receiver*) mainCommChecker);
     mainImageConverter->add_callback_msg_receiver((msg_receiver*) mainThermalCamera);
     mainThermalCamera->add_callback_msg_receiver((msg_receiver*) mainHeatcenterProv);
-    mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
-    mainCommStack->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+    if(cam_negator == NULL) {
+        Logger::getAssignedLogger()->log("Not Negating Camera", LoggerLevel::Info);
+        mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+    }
+    else {
+        Logger::getAssignedLogger()->log("Negating Camera", LoggerLevel::Info);
+        mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) cam_negator);
+        cam_negator->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+    }
+    if(gyro_negator == NULL) {
+        Logger::getAssignedLogger()->log("Not Negating Gyro", LoggerLevel::Info);
+        mainCommStack->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+    }
+    else {
+        Logger::getAssignedLogger()->log("Negating Gyro", LoggerLevel::Info);
+        mainCommStack->add_callback_msg_receiver((msg_receiver*) gyro_negator);
+        gyro_negator->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+    }
     mainPitchUserRef->add_callback_msg_receiver((msg_receiver*) camPitchControlSystem);
     mainYawUserRef->add_callback_msg_receiver((msg_receiver*) camYawControlSystem);
     camPitchControlSystem->add_callback_msg_receiver((msg_receiver*) mainCtrlActuationBridge);

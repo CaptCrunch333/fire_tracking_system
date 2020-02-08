@@ -20,6 +20,6 @@ class PumpController : public msg_receiver, public msg_emitter
 
         TimedSwitch* m_switch;
         LUT2D* m_LUT;
-        float m_prev_water_level;
-        float m_water_ejected;
+        float m_prev_water_level = 0;
+        float m_water_ejected = 0;
 };
