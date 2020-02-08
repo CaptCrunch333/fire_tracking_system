@@ -87,6 +87,7 @@ int main(int argc, char** argv)
     camPitchPIDPara->kdd = 0.0;
     camPitchPIDPara->anti_windup = 0.55; //ugv: 0.55
     camPitchPIDPara->en_pv_derivation = 0;
+    camPitchPIDPara->id = block_id::PID_PITCH;
     camPitchControlSystem->changePIDSettings(camPitchPIDPara);
     
     PID_parameters* camYawPIDPara = new PID_parameters;
@@ -96,6 +97,7 @@ int main(int argc, char** argv)
     camYawPIDPara->kdd = 0.0;
     camYawPIDPara->anti_windup = 0.55; //ugv: 0.55
     camYawPIDPara->en_pv_derivation = 0;
+    camYawPIDPara->id = block_id::PID_YAW;
     camYawControlSystem->changePIDSettings(camYawPIDPara);
     // ********************************************************************************
     // *************************** CONTROLLER OUTPUT BRIDGE ***************************

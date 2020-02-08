@@ -23,6 +23,7 @@ CommChecker::~CommChecker()
 
 void CommChecker::loopInternal()
 {
+    m_timer.tick(); //TODO: DELETE
     HeartbeatMsg t_msg;
     emit_message((DataMessage*) &t_msg);
     if(m_timer.tockMicroSeconds() >= m_timeout)
