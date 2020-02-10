@@ -81,8 +81,8 @@ int main(int argc, char** argv)
     // ********************************************************************************
     // ******************************** PID PARAMETERS ********************************
     PID_parameters* camPitchPIDPara = new PID_parameters;
-    camPitchPIDPara->kp = 0.0;
-    camPitchPIDPara->ki = 0.8; //ugv: 0.8
+    camPitchPIDPara->kp = 0.0; //uav 0.5
+    camPitchPIDPara->ki = 3.2; //uav 0.8, ugv: 0.8
     camPitchPIDPara->kd = 0.0;
     camPitchPIDPara->kdd = 0.0;
     camPitchPIDPara->anti_windup = 0.55; //ugv: 0.55
@@ -91,8 +91,8 @@ int main(int argc, char** argv)
     camPitchControlSystem->changePIDSettings(camPitchPIDPara);
     
     PID_parameters* camYawPIDPara = new PID_parameters;
-    camYawPIDPara->kp = 0.0;
-    camYawPIDPara->ki = 1.5; //ugv: 1.5
+    camYawPIDPara->kp = 0.; //uav 0.5
+    camYawPIDPara->ki = 6.0; //uav 1, ugv: 1.5
     camYawPIDPara->kd = 0.0;
     camYawPIDPara->kdd = 0.0;
     camYawPIDPara->anti_windup = 0.55; //ugv: 0.55
