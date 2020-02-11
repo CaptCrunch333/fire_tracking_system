@@ -1,7 +1,6 @@
 #include "FireAssessor.hpp"
 
-void FireAssessor::receive_msg_data(DataMessage* t_msg)
-{
+void FireAssessor::receive_msg_data(DataMessage* t_msg) {
     if(t_msg->getType() == msg_type::NOZZLEMSG)
     {
         if(waterExtMissionStateManager.getMissionState()==WaterFireExtState::Idle)
@@ -12,6 +11,9 @@ void FireAssessor::receive_msg_data(DataMessage* t_msg)
         NozzleOrientationMsg* t_orient_msg = (NozzleOrientationMsg*)t_msg;
         if(t_orient_msg->fire_found == true)
         {
+            if(waterExtMissionStateManager.getMissionState()==WaterFireExtState::Unarmed) {
+                waterExtMissionStateManager.updateMissionState(WaterFireExtState::Detected);
+            }
             m_fire_detected = true;
             if(t_orient_msg->pitch <= m_ang_threshold && 
                 t_orient_msg->yaw <= m_ang_threshold &&
@@ -72,22 +74,18 @@ void FireAssessor::receive_msg_data(DataMessage* t_msg)
     }
 }
 
-void FireAssessor::setAngleTolerance(float t_dim)
-{
+void FireAssessor::setAngleTolerance(float t_dim) {
     m_ang_threshold = t_dim;
 }
 
-void FireAssessor::setExtinguishedTimeout(int t_val)
-{
+void FireAssessor::setExtinguishedTimeout(int t_val) {
     m_Timeout = t_val;
 }
 
-void FireAssessor::setNeededWaterVolume(float t_val)
-{
+void FireAssessor::setNeededWaterVolume(float t_val) {
     m_needed_water = t_val;
 }
 
-void FireAssessor::setMaximumTriggeringDistance(float t_val)
-{
+void FireAssessor::setMaximumTriggeringDistance(float t_val) {
     m_TrigDist = t_val;
 }

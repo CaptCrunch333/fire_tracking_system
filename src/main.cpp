@@ -19,6 +19,7 @@
 #include "FireAssessor.hpp"
 #include "PumpRosBridge.hpp"
 #include "Negator.hpp"
+#include "CameraScanner1D.hpp"
 
 int main(int argc, char** argv)
 {
@@ -46,6 +47,9 @@ int main(int argc, char** argv)
     // cam_negator = new Negator;
     mainHeatcenterProv->setCutOffTemperature(90.f);
     // ********************************************************************************
+    // ******************************** CAMERA SCANNER ********************************
+    CameraScanner1D* mainThermalScanner = new CameraScanner1D;
+    mainThermalScanner->setDelay(5000);
     // ******************************* USER REFERENCES ********************************
     NozzlePitch_UserReference* mainPitchUserRef = new NozzlePitch_UserReference;
     NozzleYaw_UserReference* mainYawUserRef = new NozzleYaw_UserReference;
@@ -122,13 +126,14 @@ int main(int argc, char** argv)
     // ********************************************************************************
     // ********************************** ROS UNITS ***********************************
 	ROSUnit_Factory main_ROSUnitFactory(nh);
-	ROSUnit* InternalStateUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "/water_ext/set_mission_state");
-    ROSUnit* EnvCondUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "/water_ext/set_environment_cond");
-    ROSUnit* FireStateUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "/water_ext/update_fire_state");
-    ROSUnit* WaterLevelRequesterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Empty, "/water_ext/get_water_level");
-    ROSUnit* WaterLevelUpdaterClnt = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_msg_type::ROSUnit_Int, "/ex_bldg_fire_mm/update_water_level");
-    ROSUnit* FireDistanceUpdaterSub = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Subscriber, ROSUnit_msg_type::ROSUnit_Float, "/ugv_nav/distance_to_fire");
-    ROSUnit* StateChangeUpdaterClnt = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_msg_type::ROSUnit_Int, "/gf_indoor_fire_mm/update_water_ext_state");
+	ROSUnit* InternalStateUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "water_ext/set_mission_state");
+    ROSUnit* EnvCondUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "water_ext/set_environment_cond");
+    ROSUnit* FireStateUpdaterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Int, "water_ext/update_fire_state");
+    ROSUnit* WaterLevelRequesterSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_msg_type::ROSUnit_Empty, "water_ext/get_water_level");
+    ROSUnit* WaterLevelUpdaterClnt = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_msg_type::ROSUnit_Int, "ex_bldg_fire_mm/update_water_level");
+    ROSUnit* FireDistanceUpdaterSub = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Subscriber, ROSUnit_msg_type::ROSUnit_Float, "ugv_nav/distance_to_fire");
+    ROSUnit* StateChangeUpdaterClnt = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Client, ROSUnit_msg_type::ROSUnit_Int, "gf_indoor_fire_mm/update_water_ext_state");
+    ROSUnit* ThermalScannerSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Empty, "water_ext/trigger_scan");
     // ********************************************************************************
     // ****************************** SYSTEM CONNECTIONS ******************************
     mainCommChecker->add_callback_msg_receiver((msg_receiver*) mainCommStack);
@@ -168,6 +173,7 @@ int main(int argc, char** argv)
     mainPumpRosBridge->add_callback_msg_receiver((msg_receiver*) WaterLevelUpdaterClnt);
     mainFireAssessor->add_callback_msg_receiver((msg_receiver*) mainPumpController);
     mainPumpController->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    ThermalScannerSrv->add_callback_msg_receiver((msg_receiver*) mainThermalScanner);
     // ********************************************************************************
     // ************************* Initialize Reference To Zero *************************
     msg_emitter tmp_emitter;
