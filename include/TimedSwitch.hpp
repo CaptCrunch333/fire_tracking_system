@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "Switch.hpp"
+#include "ControllerOutputMsg.hpp"
 #include "ControlledTimer.hpp"
 #include "IntegerMsg.hpp"
 #include "logger.hpp"

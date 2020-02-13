@@ -170,6 +170,7 @@ int main(int argc, char** argv)
     mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireDistanceUpdaterSub->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
+    //mainPump->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     WaterLevelRequesterSrv->add_callback_msg_receiver((msg_receiver*) mainPumpController);
     mainPumpController->add_callback_msg_receiver((msg_receiver*) mainPumpRosBridge);
     mainPumpRosBridge->add_callback_msg_receiver((msg_receiver*) WaterLevelUpdaterClnt);
