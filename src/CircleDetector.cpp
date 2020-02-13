@@ -35,23 +35,24 @@ void CircleDetector::checkSanity()
 	std::vector<float> likelihood_list;
 	int max_idx;
 	ringMatchScores(likelihood_list, max_idx);
-	
-	if (!initialized)
-	{
-		if (likelihood_list.at(max_idx) > ring_match_threshold)
+	if(likelihood_list.size() > 0) {
+		if (!initialized)
 		{
-			initialized = true;
+			if (likelihood_list.at(max_idx) > ring_match_threshold)
+			{
+				initialized = true;
+				ring_center_x = circles.at(max_idx)[0];
+				ring_center_y = circles.at(max_idx)[1];
+				ring_center_radius = circles.at(max_idx)[2];
+			}
+		}
+		else if (likelihood_list.at(max_idx) > ring_match_threshold) {
 			ring_center_x = circles.at(max_idx)[0];
 			ring_center_y = circles.at(max_idx)[1];
 			ring_center_radius = circles.at(max_idx)[2];
+			ring_center_radius_var = ring_center_radius_var + 10;
+			ring_center_radius_var = ring_center_radius_var * ring_measured_radius_var / (ring_center_radius_var + ring_measured_radius_var);
 		}
-	}
-	else if (likelihood_list.at(max_idx) > ring_match_threshold) {
-		ring_center_x = circles.at(max_idx)[0];
-		ring_center_y = circles.at(max_idx)[1];
-		ring_center_radius = circles.at(max_idx)[2];
-		ring_center_radius_var = ring_center_radius_var + 10;
-		ring_center_radius_var = ring_center_radius_var * ring_measured_radius_var / (ring_center_radius_var + ring_measured_radius_var);
 	}
 }
 
@@ -80,6 +81,8 @@ void CircleDetector::calcFireCenter(cv::Mat tmp, CamSpecs cam)
 		orientation.yaw = 0;
 		orientation.fire_found = false;
 	}
+	//std::cout <<"x: "<< orientation.pitch <<std::endl;
+	//std::cout <<"y: "<< orientation.yaw <<std::endl;
 }
 
 void CircleDetector::calcFireAngles(int x,int y, CamSpecs cam)
@@ -89,8 +92,7 @@ void CircleDetector::calcFireAngles(int x,int y, CamSpecs cam)
 	// orientation.yaw = -1* orientation.yaw;
 	// orientation.pitch = -1* orientation.pitch;
 	orientation.fire_found = true;
-	std::cout <<"x: "<< x <<std::endl;
-	std::cout <<"y: "<< y <<std::endl;
+	
 
 }
 
