@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "/opt/ros/kinetic/include/**",
+                "/opt/ros/melodic/include/**",
                 "${workspaceFolder}/**",
                 "/home/ffuav01/MBZIRC_ws/devel/include/*"
             ],

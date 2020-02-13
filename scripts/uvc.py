@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32
-from firefighting_os.msg import temp_range
+from water_ext.msg import temp_range
 from cv_bridge import CvBridge, CvBridgeError
 
 try:

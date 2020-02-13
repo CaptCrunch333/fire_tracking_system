@@ -1,6 +1,6 @@
 #include "Switcher.hpp"
 
-Switcher::Switcher(string t_name, switcher_type t_type, control_system t_parent) {
+Switcher::Switcher(std::string t_name, switcher_type t_type, control_system t_parent) {
     _type = t_type;
     _name = t_name;
     _parent = t_parent;
@@ -32,7 +32,7 @@ Block* Switcher::getActiveBlock(){
     return _active_block;
 }
 
-string Switcher::getID(){
+std::string Switcher::getID(){
     return _name;
 }
 
