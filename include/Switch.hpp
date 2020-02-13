@@ -1,7 +1,6 @@
 #pragma once 
 
 #include "MsgEmitter.hpp"
-#include "SwitchMsg.hpp"
 
 enum class SwitchType {TIMED_SWITCH};
 

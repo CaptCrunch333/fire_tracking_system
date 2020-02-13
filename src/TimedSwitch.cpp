@@ -11,8 +11,8 @@ void TimedSwitch::setState(bool t_state)
     {
         m_timer.Pause();
     }
-    SwitchMsg t_msg;
-    t_msg.data = m_state;
+    ControllerOutputMsg t_msg;
+    t_msg.setControlSignal((float)m_state, control_system::pump);
     this->emit_message((DataMessage*) &t_msg);
 }
 
@@ -35,7 +35,7 @@ void TimedSwitch::resetSwitch()
 {
     m_timer.Stop();
     m_state = false;
-    SwitchMsg t_msg;
-    t_msg.data = m_state;
+    ControllerOutputMsg t_msg;
+    t_msg.setControlSignal((float)m_state, control_system::pump);
     this->emit_message((DataMessage*) &t_msg);
 }

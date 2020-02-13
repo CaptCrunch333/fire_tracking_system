@@ -14,7 +14,7 @@ const struct tPacketProp{
 enum class msg_type {TESTMSG, SERIALDATA ,reference, THREEAXISSENSORMSG, VELOCITY, ACCELERATION, THERMALIMAGE, optitrack, FLIGHTSCENARIO, POSES, TAGGEDPOSES, POSE, POSITION, ATTITUDE, HEADING, NOZZLEMSG, WATERTANKLEVEL, WATEREJECTED, UPDATECONTROLLER, RESETCONTROLLER, control_system, HEARTBEAT, CONTROLLEROUTPUTMSG, UPDATEPOSEREFERENCE, UPDATENOZZLEPOSEREFERENCE, controller, float_msg, FLOAT, BOOLEAN, INTEGER, switcher, VECTOR2D, VECTOR3D, POINT, POINTS, VECTOR, external_reference, SWITCH, ack,internal_msg_start, ROS, EMPTY, WATEREXTSTATE};
 enum class msg_type_optitrack {position, attitude};
 enum class msg_type_flight_scenario {USER, SET_PID};
-enum class control_system {roll=3, pitch=4, yaw=5, x=0, y=1, z=2, pitch_rate = 6, yaw_rate = 7, null_type};
+enum class control_system {roll=3, pitch=4, yaw=5, x=0, y=1, z=2, pitch_rate = 6, yaw_rate = 7, pump = 8, null_type};
 enum class block_id {PID_X=0, PID_Y=1, PID_Z=2, PID_ROLL=3, PID_PITCH=4, PID_YAW=5, REF_X=6, REF_Y=7, REF_Z=8, REF_ROLL=9, REF_PITCH=10, REF_YAW=11, PID_PITCH_RATE = 12, PID_YAW_RATE = 13, REF_PITCH_RATE = 14, REF_YAW_RATE = 15};
 enum class block_type {controller, provider, reference};
 enum class switcher_type {controller, provider, reference, null_type};

@@ -34,10 +34,10 @@ int main(int argc, char** argv)
     //Logger::getAssignedLogger()->enableFileLog(LoggerLevel::Error);
     // ********************************************************************************
     // ***************************** COMMUNICATION DEVICE *****************************
-    //LinuxSerialCommDevice* mainCommDevice = new LinuxSerialCommDevice;
-    //BaseCommunication* mainCommStack = new BaseCommunication((CommDevice*) mainCommDevice);
-    //std::string port_add = "/dev/NozzleMC";
-    //CommChecker* mainCommChecker = new CommChecker(mainCommDevice, (void*) &port_add, block_frequency::hz10);
+    LinuxSerialCommDevice* mainCommDevice = new LinuxSerialCommDevice;
+    BaseCommunication* mainCommStack = new BaseCommunication((CommDevice*) mainCommDevice);
+    std::string port_add = "/dev/NozzleMC";
+    CommChecker* mainCommChecker = new CommChecker(mainCommDevice, (void*) &port_add, block_frequency::hz10);
     // ********************************************************************************
     // *************************** THERMAL IMAGE PROVIDERS ****************************
     ROSUnit* mainImageConverter = new ImageConverter("/lepton_topic", nh);
@@ -138,8 +138,8 @@ int main(int argc, char** argv)
     ROSUnit* ThermalScannerSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Empty, "water_ext/trigger_scan");
     // ********************************************************************************
     // ****************************** SYSTEM CONNECTIONS ******************************
-    //mainCommChecker->add_callback_msg_receiver((msg_receiver*) mainCommStack);
-    //mainCommStack->add_callback_msg_receiver((msg_receiver*) mainCommChecker);
+    mainCommChecker->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    mainCommStack->add_callback_msg_receiver((msg_receiver*) mainCommChecker);
     mainImageConverter->add_callback_msg_receiver((msg_receiver*) mainThermalCamera);
     mainThermalCamera->add_callback_msg_receiver((msg_receiver*) mainHeatcenterProv);
     if(cam_negator == NULL) {
@@ -153,29 +153,31 @@ int main(int argc, char** argv)
     }
     if(gyro_negator == NULL) {
         Logger::getAssignedLogger()->log("Not Negating Gyro", LoggerLevel::Info);
-        //mainCommStack->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+        mainCommStack->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
     }
     else {
         Logger::getAssignedLogger()->log("Negating Gyro", LoggerLevel::Info);
-        //mainCommStack->add_callback_msg_receiver((msg_receiver*) gyro_negator);
+        mainCommStack->add_callback_msg_receiver((msg_receiver*) gyro_negator);
         gyro_negator->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
     }
     mainPitchUserRef->add_callback_msg_receiver((msg_receiver*) camPitchControlSystem);
     mainYawUserRef->add_callback_msg_receiver((msg_receiver*) camYawControlSystem);
     camPitchControlSystem->add_callback_msg_receiver((msg_receiver*) mainCtrlActuationBridge);
     camYawControlSystem->add_callback_msg_receiver((msg_receiver*) mainCtrlActuationBridge);
-   // mainCtrlActuationBridge->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    mainCtrlActuationBridge->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     InternalStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) &waterExtMissionStateManager);
     (&waterExtMissionStateManager)->add_callback_msg_receiver((msg_receiver*) StateChangeUpdaterClnt);
     mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireDistanceUpdaterSub->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
+    mainPump->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     WaterLevelRequesterSrv->add_callback_msg_receiver((msg_receiver*) mainPumpController);
     mainPumpController->add_callback_msg_receiver((msg_receiver*) mainPumpRosBridge);
     mainPumpRosBridge->add_callback_msg_receiver((msg_receiver*) WaterLevelUpdaterClnt);
     mainFireAssessor->add_callback_msg_receiver((msg_receiver*) mainPumpController);
-    //mainPumpController->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    mainPumpController->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     ThermalScannerSrv->add_callback_msg_receiver((msg_receiver*) mainThermalScanner);
+    mainThermalScanner->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     // ********************************************************************************
     // ************************* Initialize Reference To Zero *************************
     msg_emitter tmp_emitter;
@@ -190,7 +192,7 @@ int main(int argc, char** argv)
     Looper* main_looper = new Looper();
     main_looper->addTimedBlock((TimedBlock*) camPitchControlSystem);
     main_looper->addTimedBlock((TimedBlock*) camYawControlSystem);
-    //main_looper->addTimedBlock((TimedBlock*) mainCommChecker);
+    main_looper->addTimedBlock((TimedBlock*) mainCommChecker);
     pthread_create(&loop100hz_func_id, NULL, &Looper::Loop100Hz, NULL);
     pthread_create(&loop10hz_func_id, NULL, &Looper::Loop10Hz, NULL);
     // ********************************************************************************
