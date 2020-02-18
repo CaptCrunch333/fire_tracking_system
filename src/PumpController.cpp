@@ -14,6 +14,7 @@ void PumpController::receive_msg_data(DataMessage* t_msg)
         FireState curr_fire_state = (FireState) ((IntegerMsg*) t_msg)->data;
         if(curr_fire_state == FireState::DETECTED_INRANGE)
         {
+            Logger::getAssignedLogger()->log("Detected in range", LoggerLevel::Info);
             if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Armed_Idle)
             {
                 if(m_LUT->getVal(m_switch->getRunningTime()) > 0)
@@ -42,6 +43,7 @@ void PumpController::receive_msg_data(DataMessage* t_msg)
         }
         else if(curr_fire_state == FireState::DETECTED_OUTOFRANGE)
         {
+            Logger::getAssignedLogger()->log("Detected out of range", LoggerLevel::Info);
             if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Armed_Extinguishing)
             {
                 m_switch->setState(false);
@@ -55,6 +57,7 @@ void PumpController::receive_msg_data(DataMessage* t_msg)
         }
         else if(curr_fire_state == FireState::NOTDETECTED)
         {
+            Logger::getAssignedLogger()->log("Not detected", LoggerLevel::Info);
             if(waterExtMissionStateManager.getMissionState() == WaterFireExtState::Idle)
             {
                 Logger::getAssignedLogger()->log("Reseting Water Level", LoggerLevel::Info);

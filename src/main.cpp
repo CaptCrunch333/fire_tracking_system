@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     Negator* cam_negator = NULL;
     cam_negator = new Negator;
     #endif
-    mainHeatcenterProv->setCutOffTemperature(90.f);
+    mainHeatcenterProv->setCutOffTemperature(60.f);
     // ********************************************************************************
     // ******************************** CAMERA SCANNER ********************************
     CameraScanner1D* mainThermalScanner = new CameraScanner1D;
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
     // ******************************* PUMP CONTROLLER ********************************
     TimedSwitch* mainPump = new TimedSwitch;
     LUT2D* waterTankLUT = new LUT2D;
-    waterTankLUT->setLUT("/home/ffuav01/MBZIRC_ws/src/water_ext/config/LUT.txt");
+    waterTankLUT->setLUT("/home/ch3uav4/catkin_wtr/src/water_ext/config/LUT.txt");
     PumpController* mainPumpController = new PumpController(mainPump, waterTankLUT);
     //TODO: use the new MsgEmitter Structure
     PumpRosBridge* mainPumpRosBridge = new PumpRosBridge;
@@ -157,7 +157,7 @@ int main(int argc, char** argv)
     //TODO: add a "valve" that controls the flow of data between two blocks based on a logical expression(s)
     //FireAssessor* mainFireAssessor = new FireAssessor;
     UGVFireAssessor* mainFireAssessor = new UGVFireAssessor;
-    mainFireAssessor->setAngleTolerance(0.1745); //10 degrees
+    mainFireAssessor->setAngleTolerance(0.1745/2); //5 degrees
     //mainFireAssessor->setExtinguishedTimeout(2000); //2 seconds
     //mainFireAssessor->setMaximumTriggeringDistance(1);
     //mainFireAssessor->setNeededWaterVolume(1);
@@ -209,9 +209,9 @@ int main(int argc, char** argv)
     mainPumpController->add_callback_msg_receiver((msg_receiver*) mainPumpRosBridge);
     mainPumpRosBridge->add_callback_msg_receiver((msg_receiver*) WaterLevelUpdaterClnt);
     mainFireAssessor->add_callback_msg_receiver((msg_receiver*) mainPumpController);
-    mainPumpController->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    //mainPumpController->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     ThermalScannerSrv->add_callback_msg_receiver((msg_receiver*) mainThermalScanner);
-    mainThermalScanner->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    //mainThermalScanner->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     // ********************************************************************************
     // ************************* Initialize Reference To Zero *************************
     msg_emitter tmp_emitter;

@@ -14,7 +14,7 @@ void UGVFireAssessor::receive_msg_data(DataMessage* t_msg) {
             // if(waterExtMissionStateManager.getMissionState()==WaterFireExtState::Unarmed) {
             //     waterExtMissionStateManager.updateMissionState(WaterFireExtState::Detected);
             // }
-            m_fire_detected = true;
+            //m_fire_detected = true;
             if(t_orient_msg->pitch <= m_ang_threshold && 
                 t_orient_msg->yaw <= m_ang_threshold)
             {
@@ -31,7 +31,7 @@ void UGVFireAssessor::receive_msg_data(DataMessage* t_msg) {
         }
         else if(t_orient_msg->fire_found == false)
         {
-            FireState t_state = FireState::DETECTED_OUTOFRANGE;
+            FireState t_state = FireState::NOTDETECTED;
             t_int_msg.data = (int)t_state;
             this->emit_message((DataMessage*) &t_int_msg);
             // if(m_fire_detected)
