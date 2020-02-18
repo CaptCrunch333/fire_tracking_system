@@ -7,8 +7,7 @@
 #include "IntegerMsg.hpp"
 #include "NozzleOrientationMsg.hpp"
 #include "WaterExtMissionStateManager.hpp"
-
-enum class FireState {NOTDETECTED, DETECTED_OUTOFRANGE, DETECTED_INRANGE, EXTINGUISHED};
+#include "FireAssessmentStatus.hpp"
 
 class FireAssessor : public msg_emitter, public msg_receiver
 {

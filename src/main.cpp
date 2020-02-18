@@ -21,6 +21,7 @@
 #include "Negator.hpp"
 #include "CircleDetector.hpp"
 #include "CameraScanner1D.hpp"
+#include "UGVFireAssessor.hpp"
 
 int main(int argc, char** argv)
 {
@@ -34,19 +35,19 @@ int main(int argc, char** argv)
     //Logger::getAssignedLogger()->enableFileLog(LoggerLevel::Error);
     // ********************************************************************************
     // ***************************** COMMUNICATION DEVICE *****************************
-    //LinuxSerialCommDevice* mainCommDevice = new LinuxSerialCommDevice;
-    //BaseCommunication* mainCommStack = new BaseCommunication((CommDevice*) mainCommDevice);
-    //std::string port_add = "/dev/NozzleMC";
-    //CommChecker* mainCommChecker = new CommChecker(mainCommDevice, (void*) &port_add, block_frequency::hz10);
+    LinuxSerialCommDevice* mainCommDevice = new LinuxSerialCommDevice;
+    BaseCommunication* mainCommStack = new BaseCommunication((CommDevice*) mainCommDevice);
+    std::string port_add = "/dev/NozzleMC";
+    CommChecker* mainCommChecker = new CommChecker(mainCommDevice, (void*) &port_add, block_frequency::hz10);
     // ********************************************************************************
     // *************************** THERMAL IMAGE PROVIDERS ****************************
     ROSUnit* mainImageConverter = new ImageConverter("/lepton_topic", nh);
     ThermalCam* mainThermalCamera = new Lepton3_5();
-    //HeatCenterProvider* mainHeatcenterProv = new HeatCenterProvider();
-    CircleDetector* mainHeatcenterProv = new CircleDetector();
+    HeatCenterProvider* mainHeatcenterProv = new HeatCenterProvider();
+    //CircleDetector* mainHeatcenterProv = new CircleDetector();
     Negator* cam_negator = NULL;
     // If you want to negate the angles (camera flipped upside down) uncomment the following line:
-    // cam_negator = new Negator;
+    cam_negator = new Negator;
     mainHeatcenterProv->setCutOffTemperature(90.f);
     // ********************************************************************************
     // ******************************** CAMERA SCANNER ********************************
@@ -61,7 +62,7 @@ int main(int argc, char** argv)
     NozzleOrientationProvider* mainOrientationProvider = new NozzleOrientationProvider();
     Negator* gyro_negator = NULL;
     // If you want to negate the angles (imu flipped upside down) uncomment the following line:
-    gyro_negator = new Negator;
+    //gyro_negator = new Negator;
     Pitch_PVProvider* camPitchProvider = (Pitch_PVProvider*) mainOrientationProvider;
     Yaw_PVProvider* camYawProvider = (Yaw_PVProvider*) mainOrientationProvider;
     DataFilter* pitchFilter = new ComplementaryFilter();
@@ -120,11 +121,12 @@ int main(int argc, char** argv)
     // ********************************************************************************
     // ******************************** FIRE ASSESSOR *********************************
     //TODO: add a "valve" that controls the flow of data between two blocks based on a logical expression(s)
-    FireAssessor* mainFireAssessor = new FireAssessor;
+    //FireAssessor* mainFireAssessor = new FireAssessor;
+    UGVFireAssessor* mainFireAssessor = new UGVFireAssessor;
     mainFireAssessor->setAngleTolerance(0.1745); //10 degrees
-    mainFireAssessor->setExtinguishedTimeout(2000); //2 seconds
-    mainFireAssessor->setMaximumTriggeringDistance(1);
-    mainFireAssessor->setNeededWaterVolume(1);
+    //mainFireAssessor->setExtinguishedTimeout(2000); //2 seconds
+    //mainFireAssessor->setMaximumTriggeringDistance(1);
+    //mainFireAssessor->setNeededWaterVolume(1);
     // ********************************************************************************
     // ********************************** ROS UNITS ***********************************
 	ROSUnit_Factory main_ROSUnitFactory(nh);
@@ -169,7 +171,7 @@ int main(int argc, char** argv)
     (&waterExtMissionStateManager)->add_callback_msg_receiver((msg_receiver*) StateChangeUpdaterClnt);
     mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
-    FireDistanceUpdaterSub->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
+    //FireDistanceUpdaterSub->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     //mainPump->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     WaterLevelRequesterSrv->add_callback_msg_receiver((msg_receiver*) mainPumpController);
     mainPumpController->add_callback_msg_receiver((msg_receiver*) mainPumpRosBridge);
