@@ -3,6 +3,7 @@
 //#define CIRCLE_CENTER_PROV
 #define NEGATE_CAM
 //#define NEGATE_GYRO
+#define LDXPID
 
 #include "linux_serial_comm_device.hpp"
 #include "BaseCommunication.hpp"
@@ -97,25 +98,48 @@ int main(int argc, char** argv)
     camYawControlSystem->addBlock(camYawPVRef);
     // ********************************************************************************
     // ******************************** PID PARAMETERS ********************************
+    #ifdef LDXPID
     PID_parameters* camPitchPIDPara = new PID_parameters;
-    camPitchPIDPara->kp = 0.0; //uav 0.5
-    camPitchPIDPara->ki = 3.2; //uav 0.8, ugv: 0.8
+    camPitchPIDPara->kp = 0.0; 
+    camPitchPIDPara->ki = 0.8;
     camPitchPIDPara->kd = 0.0;
     camPitchPIDPara->kdd = 0.0;
-    camPitchPIDPara->anti_windup = 0.55; //ugv: 0.55
+    camPitchPIDPara->anti_windup = 0.55;
     camPitchPIDPara->en_pv_derivation = 0;
     camPitchPIDPara->id = block_id::PID_PITCH;
     camPitchControlSystem->changePIDSettings(camPitchPIDPara);
-    
+
     PID_parameters* camYawPIDPara = new PID_parameters;
-    camYawPIDPara->kp = 0.; //uav 0.5
-    camYawPIDPara->ki = 6.0; //uav 1, ugv: 1.5
+    camYawPIDPara->kp = 0.;
+    camYawPIDPara->ki = 1.5;
     camYawPIDPara->kd = 0.0;
     camYawPIDPara->kdd = 0.0;
-    camYawPIDPara->anti_windup = 0.55; //ugv: 0.55
+    camYawPIDPara->anti_windup = 0.55;
     camYawPIDPara->en_pv_derivation = 0;
     camYawPIDPara->id = block_id::PID_YAW;
     camYawControlSystem->changePIDSettings(camYawPIDPara);
+
+    #else
+    PID_parameters* camPitchPIDPara = new PID_parameters;
+    camPitchPIDPara->kp = 0.0; 
+    camPitchPIDPara->ki = 3.2;
+    camPitchPIDPara->kd = 0.0;
+    camPitchPIDPara->kdd = 0.0;
+    camPitchPIDPara->anti_windup = 0.55;
+    camPitchPIDPara->en_pv_derivation = 0;
+    camPitchPIDPara->id = block_id::PID_PITCH;
+    camPitchControlSystem->changePIDSettings(camPitchPIDPara);
+
+    PID_parameters* camYawPIDPara = new PID_parameters;
+    camYawPIDPara->kp = 0.;
+    camYawPIDPara->ki = 6.0;
+    camYawPIDPara->kd = 0.0;
+    camYawPIDPara->kdd = 0.0;
+    camYawPIDPara->anti_windup = 0.55;
+    camYawPIDPara->en_pv_derivation = 0;
+    camYawPIDPara->id = block_id::PID_YAW;
+    camYawControlSystem->changePIDSettings(camYawPIDPara);
+    #endif
     // ********************************************************************************
     // *************************** CONTROLLER OUTPUT BRIDGE ***************************
     //TODO: this needs to be removed after the controller output msg has been adjusted

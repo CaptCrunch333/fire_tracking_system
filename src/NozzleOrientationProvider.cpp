@@ -74,7 +74,7 @@ void NozzleOrientationProvider::receive_msg_data(DataMessage* t_msg)
             m_yaw_filter->resetFilter(0);
             fire_state = false;
         }
-        
+        loopInternal();
         //Logger::getAssignedLogger()->logtofile("cam_angles: ", cam_data.x, cam_data.z, LoggerLevel::Error);
     }
     else if(t_msg->getType() == msg_type::THREEAXISSENSORMSG)
@@ -88,7 +88,6 @@ void NozzleOrientationProvider::receive_msg_data(DataMessage* t_msg)
         {
             gyro_data = 0;
         }
-        loopInternal();
-        Logger::getAssignedLogger()->logtofile("gyro_angles: ", gyro_data.x, gyro_data.z, LoggerLevel::Error);
+        //Logger::getAssignedLogger()->logtofile("gyro_angles: ", gyro_data.x, gyro_data.z, LoggerLevel::Error);
     }
 }

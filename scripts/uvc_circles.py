@@ -127,7 +127,7 @@ def main():
           display_temperature(img, maxVal, maxLoc, (0, 0, 255))
           pub.publish(image_message)
           temp.publish(temp_min, temp_max)
-          cv2.imshow('Lepton Radiometry_N', img)
+          #cv2.imshow('Lepton Radiometry_N', img)
           cv2.waitKey(1)
 
         cv2.destroyAllWindows()
