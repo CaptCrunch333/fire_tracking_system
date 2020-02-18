@@ -8,7 +8,7 @@ ImageConverter::ImageConverter(std::string tmp, ros::NodeHandle& _nh) : it_(_nh)
     OUTPUT_TOPIC = INPUT_TOPIC + "_output";
 	image_sub_ = it_.subscribe(INPUT_TOPIC, 1, &ImageConverter::ros2cv, this);
     image_pub_ = it_.advertise(OUTPUT_TOPIC, 1);
-    cv::namedWindow(CV_WINDOW, cv::WINDOW_NORMAL);
+    //cv::namedWindow(CV_WINDOW, cv::WINDOW_NORMAL);
 }
 
 ImageConverter::~ImageConverter()
@@ -64,8 +64,8 @@ bool ImageConverter::getImage(cv_bridge::CvImagePtr& tmp)
 void ImageConverter::showImage()
 {
     // Update GUI Window
-    cv::imshow(CV_WINDOW, cv_ptr->image);
-    cv::waitKey(3);
+    //cv::imshow(CV_WINDOW, cv_ptr->image);
+    //cv::waitKey(3);
     // Output modified video stream
     image_pub_.publish(cv_ptr->toImageMsg());
 }

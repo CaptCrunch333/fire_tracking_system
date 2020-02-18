@@ -1,4 +1,9 @@
 #define USING_CPP
+#define HEAT_CENTER_PROV
+//#define CIRCLE_CENTER_PROV
+#define NEGATE_CAM
+//#define NEGATE_GYRO
+
 #include "linux_serial_comm_device.hpp"
 #include "BaseCommunication.hpp"
 #include "CommChecker.hpp"
@@ -34,19 +39,24 @@ int main(int argc, char** argv)
     //Logger::getAssignedLogger()->enableFileLog(LoggerLevel::Error);
     // ********************************************************************************
     // ***************************** COMMUNICATION DEVICE *****************************
-    //LinuxSerialCommDevice* mainCommDevice = new LinuxSerialCommDevice;
-    //BaseCommunication* mainCommStack = new BaseCommunication((CommDevice*) mainCommDevice);
-    //std::string port_add = "/dev/NozzleMC";
-    //CommChecker* mainCommChecker = new CommChecker(mainCommDevice, (void*) &port_add, block_frequency::hz10);
+    LinuxSerialCommDevice* mainCommDevice = new LinuxSerialCommDevice;
+    BaseCommunication* mainCommStack = new BaseCommunication((CommDevice*) mainCommDevice);
+    std::string port_add = "/dev/NozzleMC";
+    CommChecker* mainCommChecker = new CommChecker(mainCommDevice, (void*) &port_add, block_frequency::hz10);
     // ********************************************************************************
     // *************************** THERMAL IMAGE PROVIDERS ****************************
     ROSUnit* mainImageConverter = new ImageConverter("/lepton_topic", nh);
     ThermalCam* mainThermalCamera = new Lepton3_5();
-    //HeatCenterProvider* mainHeatcenterProv = new HeatCenterProvider();
+    #ifdef HEAT_CENTER_PROV
+    HeatCenterProvider* mainHeatcenterProv = new HeatCenterProvider();
+    #elif CIRCLE_CENTER_PROV
     CircleDetector* mainHeatcenterProv = new CircleDetector();
+    #endif
     Negator* cam_negator = NULL;
     // If you want to negate the angles (camera flipped upside down) uncomment the following line:
-    // cam_negator = new Negator;
+    #ifdef NEGATE_CAM
+    cam_negator = new Negator;
+    #endif
     mainHeatcenterProv->setCutOffTemperature(90.f);
     // ********************************************************************************
     // ******************************** CAMERA SCANNER ********************************
@@ -61,7 +71,9 @@ int main(int argc, char** argv)
     NozzleOrientationProvider* mainOrientationProvider = new NozzleOrientationProvider();
     Negator* gyro_negator = NULL;
     // If you want to negate the angles (imu flipped upside down) uncomment the following line:
+    #ifdef NEGATE_GYRO
     gyro_negator = new Negator;
+    #endif
     Pitch_PVProvider* camPitchProvider = (Pitch_PVProvider*) mainOrientationProvider;
     Yaw_PVProvider* camYawProvider = (Yaw_PVProvider*) mainOrientationProvider;
     DataFilter* pitchFilter = new ComplementaryFilter();
@@ -138,8 +150,8 @@ int main(int argc, char** argv)
     ROSUnit* ThermalScannerSrv = main_ROSUnitFactory.CreateROSUnit(ROSUnit_tx_rx_type::Server, ROSUnit_Empty, "water_ext/trigger_scan");
     // ********************************************************************************
     // ****************************** SYSTEM CONNECTIONS ******************************
-    //mainCommChecker->add_callback_msg_receiver((msg_receiver*) mainCommStack);
-    //mainCommStack->add_callback_msg_receiver((msg_receiver*) mainCommChecker);
+    mainCommChecker->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    mainCommStack->add_callback_msg_receiver((msg_receiver*) mainCommChecker);
     mainImageConverter->add_callback_msg_receiver((msg_receiver*) mainThermalCamera);
     mainThermalCamera->add_callback_msg_receiver((msg_receiver*) mainHeatcenterProv);
     if(cam_negator == NULL) {
@@ -153,31 +165,31 @@ int main(int argc, char** argv)
     }
     if(gyro_negator == NULL) {
         Logger::getAssignedLogger()->log("Not Negating Gyro", LoggerLevel::Info);
-        //mainCommStack->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+        mainCommStack->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
     }
     else {
         Logger::getAssignedLogger()->log("Negating Gyro", LoggerLevel::Info);
-        //mainCommStack->add_callback_msg_receiver((msg_receiver*) gyro_negator);
+        mainCommStack->add_callback_msg_receiver((msg_receiver*) gyro_negator);
         gyro_negator->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
     }
     mainPitchUserRef->add_callback_msg_receiver((msg_receiver*) camPitchControlSystem);
     mainYawUserRef->add_callback_msg_receiver((msg_receiver*) camYawControlSystem);
     camPitchControlSystem->add_callback_msg_receiver((msg_receiver*) mainCtrlActuationBridge);
     camYawControlSystem->add_callback_msg_receiver((msg_receiver*) mainCtrlActuationBridge);
-    //mainCtrlActuationBridge->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    mainCtrlActuationBridge->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     InternalStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) &waterExtMissionStateManager);
     (&waterExtMissionStateManager)->add_callback_msg_receiver((msg_receiver*) StateChangeUpdaterClnt);
     mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireDistanceUpdaterSub->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
-    //mainPump->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    mainPump->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     WaterLevelRequesterSrv->add_callback_msg_receiver((msg_receiver*) mainPumpController);
     mainPumpController->add_callback_msg_receiver((msg_receiver*) mainPumpRosBridge);
     mainPumpRosBridge->add_callback_msg_receiver((msg_receiver*) WaterLevelUpdaterClnt);
     mainFireAssessor->add_callback_msg_receiver((msg_receiver*) mainPumpController);
-    //mainPumpController->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    mainPumpController->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     ThermalScannerSrv->add_callback_msg_receiver((msg_receiver*) mainThermalScanner);
-    //mainThermalScanner->add_callback_msg_receiver((msg_receiver*) mainCommStack);
+    mainThermalScanner->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     // ********************************************************************************
     // ************************* Initialize Reference To Zero *************************
     msg_emitter tmp_emitter;
@@ -192,7 +204,7 @@ int main(int argc, char** argv)
     Looper* main_looper = new Looper();
     main_looper->addTimedBlock((TimedBlock*) camPitchControlSystem);
     main_looper->addTimedBlock((TimedBlock*) camYawControlSystem);
-    //main_looper->addTimedBlock((TimedBlock*) mainCommChecker);
+    main_looper->addTimedBlock((TimedBlock*) mainCommChecker);
     pthread_create(&loop100hz_func_id, NULL, &Looper::Loop100Hz, NULL);
     pthread_create(&loop10hz_func_id, NULL, &Looper::Loop10Hz, NULL);
     // ********************************************************************************
