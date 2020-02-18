@@ -13,7 +13,7 @@ ImageConverter::ImageConverter(std::string tmp, ros::NodeHandle& _nh) : it_(_nh)
 
 ImageConverter::~ImageConverter()
 {
-	cv::destroyWindow(CV_WINDOW);
+    cv::destroyWindow(CV_WINDOW);
 }
 
 void ImageConverter::getImageTopic(std::string& tmp)

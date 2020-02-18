@@ -2,7 +2,11 @@
 
 CircleDetector::CircleDetector()
 {
-	
+}
+
+CircleDetector::~CircleDetector()
+{
+
 }
 
 void CircleDetector::setCutOffTemperature(float t_temp)
@@ -61,7 +65,7 @@ void CircleDetector::ringMatchScores(std::vector<float> &t_list, int &t_mx)
 	t_mx = 0;
 	for(int i = 0; i < circles.size(); i++) {
 		t_list.push_back(exp(-0.5*sqrt(ring_center_radius - circles.at(i)[2])/ring_center_radius_var));
-		if(t_list.at(t_mx) > t_list.at(i)) {
+		if(t_list.at(i) > t_list.at(t_mx)) {
 			t_mx = i;
 		}
 	}

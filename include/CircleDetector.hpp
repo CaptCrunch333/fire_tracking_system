@@ -15,6 +15,7 @@ class  CircleDetector : public Provider, public msg_receiver
 public:
 
 	CircleDetector();
+	~CircleDetector();
 	void setCutOffTemperature(float);
 	void receive_msg_data(DataMessage*);
 
