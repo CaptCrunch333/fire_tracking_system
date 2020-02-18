@@ -26,6 +26,7 @@
 #include "Negator.hpp"
 #include "CircleDetector.hpp"
 #include "CameraScanner1D.hpp"
+#include "UGVFireAssessor.hpp"
 
 int main(int argc, char** argv)
 {
@@ -52,9 +53,8 @@ int main(int argc, char** argv)
     #elif CIRCLE_CENTER_PROV
     CircleDetector* mainHeatcenterProv = new CircleDetector();
     #endif
-    Negator* cam_negator = NULL;
-    // If you want to negate the angles (camera flipped upside down) uncomment the following line:
     #ifdef NEGATE_CAM
+    Negator* cam_negator = NULL;
     cam_negator = new Negator;
     #endif
     mainHeatcenterProv->setCutOffTemperature(90.f);
@@ -69,9 +69,8 @@ int main(int argc, char** argv)
     // ***************************** ORIENTATION PROVIDER *****************************
     //TODO: add a "valve" that controls the flow of data between two blocks based on a logical expression(s)
     NozzleOrientationProvider* mainOrientationProvider = new NozzleOrientationProvider();
-    Negator* gyro_negator = NULL;
-    // If you want to negate the angles (imu flipped upside down) uncomment the following line:
     #ifdef NEGATE_GYRO
+    Negator* gyro_negator = NULL;
     gyro_negator = new Negator;
     #endif
     Pitch_PVProvider* camPitchProvider = (Pitch_PVProvider*) mainOrientationProvider;
@@ -132,11 +131,12 @@ int main(int argc, char** argv)
     // ********************************************************************************
     // ******************************** FIRE ASSESSOR *********************************
     //TODO: add a "valve" that controls the flow of data between two blocks based on a logical expression(s)
-    FireAssessor* mainFireAssessor = new FireAssessor;
+    //FireAssessor* mainFireAssessor = new FireAssessor;
+    UGVFireAssessor* mainFireAssessor = new UGVFireAssessor;
     mainFireAssessor->setAngleTolerance(0.1745); //10 degrees
-    mainFireAssessor->setExtinguishedTimeout(2000); //2 seconds
-    mainFireAssessor->setMaximumTriggeringDistance(1);
-    mainFireAssessor->setNeededWaterVolume(1);
+    //mainFireAssessor->setExtinguishedTimeout(2000); //2 seconds
+    //mainFireAssessor->setMaximumTriggeringDistance(1);
+    //mainFireAssessor->setNeededWaterVolume(1);
     // ********************************************************************************
     // ********************************** ROS UNITS ***********************************
 	ROSUnit_Factory main_ROSUnitFactory(nh);
@@ -154,24 +154,22 @@ int main(int argc, char** argv)
     mainCommStack->add_callback_msg_receiver((msg_receiver*) mainCommChecker);
     mainImageConverter->add_callback_msg_receiver((msg_receiver*) mainThermalCamera);
     mainThermalCamera->add_callback_msg_receiver((msg_receiver*) mainHeatcenterProv);
-    if(cam_negator == NULL) {
-        Logger::getAssignedLogger()->log("Not Negating Camera", LoggerLevel::Info);
-        mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
-    }
-    else {
-        Logger::getAssignedLogger()->log("Negating Camera", LoggerLevel::Info);
-        mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) cam_negator);
-        cam_negator->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
-    }
-    if(gyro_negator == NULL) {
-        Logger::getAssignedLogger()->log("Not Negating Gyro", LoggerLevel::Info);
-        mainCommStack->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
-    }
-    else {
-        Logger::getAssignedLogger()->log("Negating Gyro", LoggerLevel::Info);
-        mainCommStack->add_callback_msg_receiver((msg_receiver*) gyro_negator);
-        gyro_negator->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
-    }
+    #ifdef NEGATE_CAM
+    Logger::getAssignedLogger()->log("Negating Camera", LoggerLevel::Info);
+    mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) cam_negator);
+    cam_negator->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+    #else
+    Logger::getAssignedLogger()->log("Not Negating Camera", LoggerLevel::Info);
+    mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+    #endif
+    #ifdef NEGATE_GYRO
+    Logger::getAssignedLogger()->log("Negating Gyro", LoggerLevel::Info);
+    mainCommStack->add_callback_msg_receiver((msg_receiver*) gyro_negator);
+    gyro_negator->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+    #else
+    Logger::getAssignedLogger()->log("Not Negating Gyro", LoggerLevel::Info);
+    mainCommStack->add_callback_msg_receiver((msg_receiver*) mainOrientationProvider);
+    #endif
     mainPitchUserRef->add_callback_msg_receiver((msg_receiver*) camPitchControlSystem);
     mainYawUserRef->add_callback_msg_receiver((msg_receiver*) camYawControlSystem);
     camPitchControlSystem->add_callback_msg_receiver((msg_receiver*) mainCtrlActuationBridge);
@@ -181,7 +179,7 @@ int main(int argc, char** argv)
     (&waterExtMissionStateManager)->add_callback_msg_receiver((msg_receiver*) StateChangeUpdaterClnt);
     mainHeatcenterProv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     FireStateUpdaterSrv->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
-    FireDistanceUpdaterSub->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
+    //FireDistanceUpdaterSub->add_callback_msg_receiver((msg_receiver*) mainFireAssessor);
     mainPump->add_callback_msg_receiver((msg_receiver*) mainCommStack);
     WaterLevelRequesterSrv->add_callback_msg_receiver((msg_receiver*) mainPumpController);
     mainPumpController->add_callback_msg_receiver((msg_receiver*) mainPumpRosBridge);
